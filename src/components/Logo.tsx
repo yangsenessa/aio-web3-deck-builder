@@ -19,28 +19,29 @@ const Logo: React.FC<LogoProps> = ({ size = "md", className = "" }) => {
   return (
     <div className={`relative ${sizeClass} ${className}`}>
       <svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-        <g fill="none" stroke="white" strokeWidth="1">
-          {/* Flower petals */}
-          <path d="M120,10 C150,70 190,110 230,120 C190,130 150,170 120,230 C90,170 50,130 10,120 C50,110 90,70 120,10 Z" fill="none" stroke="white" strokeWidth="2" />
-          <path d="M120,30 C145,80 180,115 210,120 C180,125 145,160 120,210 C95,160 60,125 30,120 C60,115 95,80 120,30 Z" fill="white" stroke="white" strokeWidth="1" />
-          
-          {/* Center lines */}
-          <line x1="120" y1="10" x2="120" y2="230" stroke="white" strokeWidth="1" />
-          <line x1="10" y1="120" x2="230" y2="120" stroke="white" strokeWidth="1" />
-          
-          {/* Diagonal lines */}
-          <line x1="40" y1="40" x2="200" y2="200" stroke="white" strokeWidth="1" />
-          <line x1="40" y1="200" x2="200" y2="40" stroke="white" strokeWidth="1" />
-          
-          {/* Decorative dots */}
-          <circle cx="120" cy="10" r="3" fill="white" />
-          <circle cx="230" cy="120" r="3" fill="white" />
-          <circle cx="120" cy="230" r="3" fill="white" />
-          <circle cx="10" cy="120" r="3" fill="white" />
-          <circle cx="40" cy="40" r="3" fill="white" />
-          <circle cx="200" cy="40" r="3" fill="white" />
-          <circle cx="200" cy="200" r="3" fill="white" />
-          <circle cx="40" cy="200" r="3" fill="white" />
+        <g fill="none">
+          <path 
+            d="M120 20 C160 80 200 110 230 120 C200 130 160 170 120 220 C80 170 40 130 10 120 C40 110 80 80 120 20 Z" 
+            fill="white" 
+            stroke="white" 
+            strokeWidth="2" 
+          />
+          <path 
+            d="M120 40 C150 90 180 115 210 120 C180 125 150 160 120 200 C90 160 60 125 30 120 C60 115 90 90 120 40 Z" 
+            fill="black" 
+            stroke="white" 
+            strokeWidth="1" 
+          />
+          <circle cx="120" cy="120" r="10" fill="white" />
+          {[0, 45, 90, 135, 180, 225, 270, 315].map((angle) => (
+            <circle 
+              key={angle}
+              cx={120 + 100 * Math.cos(angle * Math.PI / 180)}
+              cy={120 + 100 * Math.sin(angle * Math.PI / 180)}
+              r="5" 
+              fill="white" 
+            />
+          ))}
         </g>
       </svg>
     </div>
