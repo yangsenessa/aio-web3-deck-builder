@@ -9,7 +9,7 @@ const __dirname = dirname(__filename);
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }: { mode: string }) => ({
-  base: mode === 'production' ? '/aio-web3-deck-builder/' : '/',
+  base: '/aio-web3-deck-builder/', // Add this line for GitHub Pages
   server: {
     host: "::",
     port: 8080,
