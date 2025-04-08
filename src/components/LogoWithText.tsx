@@ -17,7 +17,7 @@ const LogoWithText: React.FC<LogoWithTextProps> = ({
     <div className={`flex flex-col items-center ${className}`}>
       <Logo size={size} />
       {showText && (
-        <div className="mt-2 text-4xl font-bold tracking-wider uppercase">
+        <div className="mt-2 text-4xl font-bold tracking-wider bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
           AIO
         </div>
       )}
