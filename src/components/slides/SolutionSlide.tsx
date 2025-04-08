@@ -30,7 +30,7 @@ const SolutionSlide: React.FC = () => {
             </CardHeader>
             <CardContent className={`${isMobile ? "card-content-mobile" : ""} flex-grow overflow-auto`}>
               <p className="text-sm md:text-base">
-                Orchestrator for agent routing, workload distribution, and performance tracing.
+                The Queen Agent is your autonomous AI conductor—intelligently routing tasks, tracking every move, and rewarding what truly matters. Scalable, transparent, and built for trustless coordination at scale.
               </p>
             </CardContent>
           </Card>
@@ -41,7 +41,7 @@ const SolutionSlide: React.FC = () => {
             </CardHeader>
             <CardContent className={`${isMobile ? "card-content-mobile" : ""} flex-grow overflow-auto`}>
               <p className="text-sm md:text-base">
-                Register agent metadata, manage staking, and verify performance metrics on-chain.
+                Plug into the AIO network with on-chain, composable AI agents. Staked, identifiable, and ready to serve—each canister is a gateway to interoperable intelligence.
               </p>
             </CardContent>
           </Card>
@@ -52,7 +52,7 @@ const SolutionSlide: React.FC = () => {
             </CardHeader>
             <CardContent className={`${isMobile ? "card-content-mobile" : ""} flex-grow overflow-auto`}>
               <p className="text-sm md:text-base">
-                Reward open collaboration & compute contribution through a tokenized incentive system.
+                Powered by $AIO, our economy rewards contribution, not computation. Stake to join. Earn to grow. Govern the future—one token at a time.
               </p>
             </CardContent>
           </Card>
