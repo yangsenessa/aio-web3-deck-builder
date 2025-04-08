@@ -21,21 +21,30 @@ const Logo: React.FC<LogoProps> = ({ size = "md", className = "" }) => {
       <svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
         <g fill="none">
           <path 
-            d="M120 60 L180 120 L120 180 L60 120 Z" 
+            d="M120 20 L180 60 L120 100 L60 60 Z" 
             fill="black" 
             stroke="white" 
-            strokeWidth="10" 
+            strokeWidth="2" 
+          />
+          <path 
+            d="M120 140 L180 180 L120 220 L60 180 Z" 
+            fill="black" 
+            stroke="white" 
+            strokeWidth="2" 
+          />
+          <path 
+            d="M20 120 L60 180 L100 120 L60 60 Z" 
+            fill="black" 
+            stroke="white" 
+            strokeWidth="2" 
+          />
+          <path 
+            d="M220 120 L180 180 L140 120 L180 60 Z" 
+            fill="black" 
+            stroke="white" 
+            strokeWidth="2" 
           />
           <circle cx="120" cy="120" r="20" fill="white" />
-          {[45, 135, 225, 315].map((angle) => (
-            <circle 
-              key={angle}
-              cx={120 + 70 * Math.cos(angle * Math.PI / 180)}
-              cy={120 + 70 * Math.sin(angle * Math.PI / 180)}
-              r="10" 
-              fill="white" 
-            />
-          ))}
         </g>
       </svg>
     </div>
