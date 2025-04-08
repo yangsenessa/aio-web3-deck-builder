@@ -1,7 +1,10 @@
 
 import React from 'react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const RoadmapSlide: React.FC = () => {
+  const isMobile = useIsMobile();
+  
   const roadmapItems = [
     {
       quarter: "Q1",
@@ -42,29 +45,29 @@ const RoadmapSlide: React.FC = () => {
   ];
 
   return (
-    <div id="slide-9" className="slide flex flex-col items-center justify-center bg-dark p-8">
+    <div id="slide-9" className="slide flex flex-col items-center justify-center bg-dark p-4 md:p-8">
       <div className="max-w-4xl w-full">
-        <h2 className="text-3xl md:text-4xl font-bold mb-2 text-center">Roadmap</h2>
-        <p className="text-xl text-center text-light-muted mb-8">2025—2026</p>
+        <h2 className="text-2xl md:text-4xl font-bold mb-1 md:mb-2 text-center">Roadmap</h2>
+        <p className="text-lg md:text-xl text-center text-light-muted mb-4 md:mb-8">2025—2026</p>
         
         <div className="relative">
           {/* Horizontal connecting line */}
           <div className="absolute left-0 right-0 top-16 h-1 bg-gray-700 hidden md:block"></div>
           
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className={`grid grid-cols-1 ${isMobile ? 'gap-4' : 'md:grid-cols-4 gap-8'}`}>
             {roadmapItems.map((item, index) => (
-              <div key={index} className="relative">
+              <div key={index} className={`relative ${isMobile ? 'mb-4' : ''}`}>
                 {/* Quarter circle */}
-                <div className="w-12 h-12 rounded-full bg-dark border-2 border-gray-600 flex items-center justify-center mx-auto mb-6 relative z-10">
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-dark border-2 border-gray-600 flex items-center justify-center mx-auto mb-3 md:mb-6 relative z-10">
                   <span className="font-bold">{item.quarter}</span>
                 </div>
                 
-                <div className="bg-dark-muted/30 border border-gray-700 rounded-lg p-4 h-52">
-                  <h3 className="text-lg font-medium mb-3 text-center">{item.title}</h3>
-                  <ul className="space-y-2 text-sm">
+                <div className="bg-dark-muted/30 border border-gray-700 rounded-lg p-3 md:p-4 h-auto md:h-52">
+                  <h3 className="text-base md:text-lg font-medium mb-2 md:mb-3 text-center">{item.title}</h3>
+                  <ul className="space-y-1 md:space-y-2 text-xs md:text-sm">
                     {item.items.map((listItem, i) => (
                       <li key={i} className="flex items-start">
-                        <span className="h-2 w-2 bg-white rounded-full mt-1.5 mr-2 flex-shrink-0"></span>
+                        <span className="h-1.5 w-1.5 md:h-2 md:w-2 bg-white rounded-full mt-1 mr-1.5 md:mr-2 flex-shrink-0"></span>
                         <span>{listItem}</span>
                       </li>
                     ))}
@@ -75,8 +78,8 @@ const RoadmapSlide: React.FC = () => {
           </div>
         </div>
         
-        <div className="mt-10 text-center">
-          <p className="text-muted-foreground">Full technical whitepaper available upon request</p>
+        <div className="mt-6 md:mt-10 text-center">
+          <p className="text-xs md:text-sm text-muted-foreground">Full technical whitepaper available upon request</p>
         </div>
       </div>
     </div>

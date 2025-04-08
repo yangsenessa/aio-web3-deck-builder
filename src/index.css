@@ -75,12 +75,15 @@
     height: auto;
   }
 
-  /* Mobile-specific styles */
+  /* Mobile-specific styles - Enhanced */
   @media (max-width: 768px) {
     .slide {
       padding: 0.75rem;
       height: auto;
       min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
     h1 {
@@ -91,11 +94,17 @@
     h2 {
       font-size: 1.5rem !important;
       line-height: 2rem !important;
+      margin-bottom: 1rem !important;
     }
 
     h3 {
       font-size: 1.25rem !important;
       line-height: 1.75rem !important;
+      margin-bottom: 0.75rem !important;
+    }
+
+    p {
+      font-size: 0.9375rem !important;
     }
 
     .mobile-text-sm {
@@ -107,12 +116,50 @@
       margin-top: 0.5rem !important;
     }
 
+    .mobile-mb-reduced {
+      margin-bottom: 0.5rem !important;
+    }
+
     .mobile-padding-reduced {
       padding: 0.75rem !important;
     }
 
+    .mobile-padding-x-reduced {
+      padding-left: 0.5rem !important;
+      padding-right: 0.5rem !important;
+    }
+
+    .mobile-padding-y-reduced {
+      padding-top: 0.5rem !important;
+      padding-bottom: 0.5rem !important;
+    }
+
     .mobile-gap-reduced {
       gap: 0.75rem !important;
+    }
+
+    /* Card styling for mobile */
+    .card-header-mobile {
+      padding: 0.75rem !important;
+    }
+    
+    .card-content-mobile {
+      padding: 0.75rem !important;
+    }
+
+    /* Table styling for mobile */
+    table {
+      font-size: 0.8125rem !important;
+    }
+    
+    th, td {
+      padding: 0.5rem 0.375rem !important;
+    }
+    
+    /* Better button touch targets */
+    button {
+      min-height: 2.5rem;
+      min-width: 2.5rem;
     }
   }
 }

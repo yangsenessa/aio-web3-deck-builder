@@ -12,11 +12,13 @@ import RoadmapSlide from '@/components/slides/RoadmapSlide';
 import TeamSlide from '@/components/slides/TeamSlide';
 import CallToActionSlide from '@/components/slides/CallToActionSlide';
 import Navigation from '@/components/Navigation';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Index: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const slideRefs = useRef<HTMLDivElement[]>([]);
+  const isMobile = useIsMobile();
 
   // Store slide refs when they're rendered
   const storeRef = (ref: HTMLDivElement | null, index: number) => {
@@ -55,6 +57,42 @@ const Index: React.FC = () => {
       });
     }
   }, [currentSlide]);
+
+  // Touch swipe support for mobile
+  useEffect(() => {
+    if (!isMobile || !containerRef.current) return;
+    
+    let touchStartY = 0;
+    
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartY = e.touches[0].clientY;
+    };
+    
+    const handleTouchEnd = (e: TouchEvent) => {
+      const touchEndY = e.changedTouches[0].clientY;
+      const diff = touchStartY - touchEndY;
+      
+      // Threshold to detect intentional swipe (50px)
+      if (Math.abs(diff) > 50) {
+        if (diff > 0) {
+          // Swipe up - go to next slide
+          handleNavigate('next');
+        } else {
+          // Swipe down - go to previous slide
+          handleNavigate('prev');
+        }
+      }
+    };
+    
+    const container = containerRef.current;
+    container.addEventListener('touchstart', handleTouchStart);
+    container.addEventListener('touchend', handleTouchEnd);
+    
+    return () => {
+      container.removeEventListener('touchstart', handleTouchStart);
+      container.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [isMobile, currentSlide]);
 
   // Update current slide based on scroll position
   useEffect(() => {
