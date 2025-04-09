@@ -1,10 +1,21 @@
-
 import React from 'react';
 
 interface LogoProps {
   size?: string;
   className?: string;
 }
+
+// Get base URL from window location in production or use hardcoded value
+const getBasePath = () => {
+  // Check if we're running in a browser
+  if (typeof window !== 'undefined') {
+    const pathSegments = window.location.pathname.split('/');
+    if (pathSegments[1] === 'aio-web3-deck-builder') {
+      return '/aio-web3-deck-builder/';
+    }
+  }
+  return '/'; // Default for development
+};
 
 const Logo: React.FC<LogoProps> = ({ size = "md", className = "" }) => {
   const sizeClasses = {
@@ -16,11 +27,12 @@ const Logo: React.FC<LogoProps> = ({ size = "md", className = "" }) => {
   };
   
   const sizeClass = sizeClasses[size as keyof typeof sizeClasses] || sizeClasses.md;
+  const basePath = getBasePath();
   
   return (
     <div className={`relative ${sizeClass} ${className}`}>
       <img 
-        src="/lovable-uploads/933b5d5c-9fb3-40c5-9cd5-e8ffecad8ed4.png" 
+        src={`${basePath}lovable-uploads/933b5d5c-9fb3-40c5-9cd5-e8ffecad8ed4.png`}
         alt="AIO Logo" 
         className="w-full h-full object-contain"
       />

@@ -8,15 +8,14 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }: { mode: string }) => ({
-  base: '/aio-web3-deck-builder/', // Add this line for GitHub Pages
+export default defineConfig({
+  base: '/aio-web3-deck-builder/',
   server: {
     host: "::",
     port: 8080,
   },
   plugins: [
     react(),
-    mode === 'development' &&
     componentTagger(),
   ].filter(Boolean),
   resolve: {
@@ -24,4 +23,4 @@ export default defineConfig(({ mode }: { mode: string }) => ({
       "@": resolve(__dirname, "./src"),
     },
   },
-}));
+});
