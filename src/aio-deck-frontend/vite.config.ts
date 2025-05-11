@@ -15,12 +15,9 @@ export default defineConfig({
     componentTagger(),
   ].filter(Boolean),
   resolve: {
-    alias: [
-      {
-        find: '@',
-        replacement: resolve(__dirname, 'src')
-      }
-    ]
+    alias: {
+      '@': resolve(__dirname, './src')
+    }
   },
   build: {
     outDir: 'dist',
