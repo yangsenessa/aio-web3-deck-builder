@@ -8,6 +8,7 @@
   ],
   "scripts": {
     "build": "cd src/aio-deck-frontend && npm run build",
+    "build:dev": "cd src/aio-deck-frontend && npm run build:dev",
     "deploy": "dfx deploy aio-deck-frontend"
   },
   "dependencies": {
