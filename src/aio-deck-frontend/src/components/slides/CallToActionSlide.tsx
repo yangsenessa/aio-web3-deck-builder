@@ -17,21 +17,21 @@ const CallToActionSlide: React.FC = () => {
               <span className="text-2xl md:text-3xl">🌐</span>
             </div>
             <h3 className="text-lg md:text-xl font-medium mb-1 md:mb-2 text-white">Contribute</h3>
-            <p className="text-sm text-white/80">Integrate your AI agents with the AIO ecosystem</p>
+            <p className="text-sm text-white/80">Integrate your AIO-Mcp Servers to AIO-2030,get grants and rewards</p>
           </div>
           <div className="rounded-xl p-4 md:p-6 bg-gradient-to-br from-web3purple/70 via-web3blue/40 to-web3pink/70 border border-web3blue/60 shadow-neon-blue backdrop-blur-md text-center">
             <div className="w-10 h-10 md:w-12 md:h-12 mx-auto mb-3 md:mb-4 flex items-center justify-center">
               <span className="text-2xl md:text-3xl">🧠</span>
             </div>
-            <h3 className="text-lg md:text-xl font-medium mb-1 md:mb-2 text-white">Build</h3>
-            <p className="text-sm text-white/80">Create new applications on the AIO Protocol</p>
+            <h3 className="text-lg md:text-xl font-medium mb-1 md:mb-2 text-white">Intelligence</h3>
+            <p className="text-sm text-white/80">Upload new proposals acctracting members to upgrade or extend business poteintial</p>
           </div>
           <div className="rounded-xl p-4 md:p-6 bg-gradient-to-br from-web3pink/70 via-web3purple/40 to-web3blue/70 border border-web3purple/60 shadow-neon-purple backdrop-blur-md text-center">
             <div className="w-10 h-10 md:w-12 md:h-12 mx-auto mb-3 md:mb-4 flex items-center justify-center">
               <span className="text-2xl md:text-3xl">💰</span>
             </div>
             <h3 className="text-lg md:text-xl font-medium mb-1 md:mb-2 text-white">Stake & Earn</h3>
-            <p className="text-sm text-white/80">Participate in the network and earn $AIO rewards</p>
+            <p className="text-sm text-white/80">Participate in members' AIO-Mcp Servers or proposals by stacking and funding $AIO to earn more rewards</p>
           </div>
         </div>
         <div className="bg-gradient-to-br from-web3blue/60 via-web3pink/30 to-web3purple/60 border border-web3pink/60 rounded-lg p-3 md:p-6 backdrop-blur-md">
@@ -39,12 +39,16 @@ const CallToActionSlide: React.FC = () => {
             <div className="mb-4 md:mb-0">
               <h3 className="text-lg md:text-xl font-medium mb-2 text-center md:text-left text-white">Get In Touch</h3>
               <div className="flex items-center mb-1 md:mb-2 justify-center md:justify-start">
-                <p className="mr-1 md:mr-2 text-sm md:text-base text-white/80">Email:</p>
-                <a href="mailto:team@aio2030.io" className="text-sm md:text-base text-blue-200 hover:underline">team@aio2030.io</a>
+                <p className="mr-1 md:mr-2 text-sm md:text-base text-white/80">X:</p>
+                <a href="mailto:team@aio2030.io" className="text-sm md:text-base text-blue-200 hover:underline">@yang_sen16029</a>
               </div>
               <div className="flex items-center justify-center md:justify-start">
                 <p className="mr-1 md:mr-2 text-sm md:text-base text-white/80">Website:</p>
-                <a href="https://aio2030.io" target="_blank" rel="noopener noreferrer" className="text-sm md:text-base text-blue-200 hover:underline">aio2030.io</a>
+                <a href="https://aio2030.fun" target="_blank" rel="noopener noreferrer" className="text-sm md:text-base text-blue-200 hover:underline">aio2030.io</a>
+              </div>
+              <div className="flex items-center justify-center md:justify-start">
+                <p className="mr-1 md:mr-2 text-sm md:text-base text-white/80">Discord:</p>
+                <a href="https://discord.com/channels/1199163706983067648/1364458688743608400" target="_blank" rel="noopener noreferrer" className="text-sm md:text-base text-blue-200 hover:underline">aio2030.io</a>
               </div>
             </div>
             <div className="flex items-center space-x-3 md:space-x-4">

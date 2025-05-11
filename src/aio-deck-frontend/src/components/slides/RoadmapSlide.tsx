@@ -9,36 +9,33 @@ const RoadmapSlide: React.FC = () => {
       quarter: "Q1",
       title: "Protocol Zero & Core Canisters",
       items: [
-        "Protocol specification v0",
-        "Core canister architecture",
-        "Developer documentation"
+        "AIO Protocol v0",
+        "Endpoint Canister"
       ]
     },
     {
       quarter: "Q2",
       title: "Token Launch + Protocol v1",
       items: [
-        "AIO token genesis",
-        "Protocol v1 implementation",
-        "Integration SDK release"
+        "AIO Token Launch",
+        "Workload ledger&smart contract"
+       
       ]
     },
     {
       quarter: "Q3",
       title: "Queen AI + DAO v1",
       items: [
-        "Queen AI orchestrator",
-        "DAO governance launch",
-        "Agent verification system"
+        "Queen Super AI",
+        "DAO Governance"
       ]
     },
     {
       quarter: "Q4",
       title: "AgentHub Launch + Commercial Integration",
       items: [
-        "AgentHub marketplace",
-        "Commercial partnerships",
-        "Enterprise SDK"
+        "AgentHub organization",
+        "Commercial Partnerships extension"
       ]
     }
   ];
@@ -75,6 +72,16 @@ const RoadmapSlide: React.FC = () => {
         </div>
         <div className="mt-6 md:mt-10 text-center">
           <p className="text-xs md:text-sm text-white/80">Full technical whitepaper available upon request</p>
+        </div>
+        {/* Appended: Roadmap Image Overview */}
+        <div className="mt-10 flex flex-col items-center justify-center">
+          <img 
+            src="/roadmap.png" 
+            alt="AIO-2030 Roadmap Overview" 
+            className="w-full max-w-3xl rounded-xl shadow-lg border border-web3pink/40 bg-white"
+            style={{objectFit: 'contain'}}
+          />
+          <div className="text-xs md:text-sm text-white/70 mt-2">AIO-2030 Roadmap Overview</div>
         </div>
       </div>
     </div>

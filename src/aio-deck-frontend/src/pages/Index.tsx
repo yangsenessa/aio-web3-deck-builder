@@ -7,7 +7,6 @@ import ArchitectureSlide from "../components/slides/ArchitectureSlide";
 import TechnologySlide from "../components/slides/TechnologySlide";
 import TokenomicsSlide from "../components/slides/TokenomicsSlide";
 import EcosystemSlide from "../components/slides/EcosystemSlide";
-import CompetitiveSlide from "../components/slides/CompetitiveSlide";
 import RoadmapSlide from "../components/slides/RoadmapSlide";
 import TeamSlide from "../components/slides/TeamSlide";
 import CallToActionSlide from "../components/slides/CallToActionSlide";
@@ -27,7 +26,6 @@ const Index = () => {
     <TechnologySlide key="technology" />,
     <TokenomicsSlide key="tokenomics" />,
     <EcosystemSlide key="ecosystem" />,
-    <CompetitiveSlide key="competitive" />,
     <RoadmapSlide key="roadmap" />,
     <TeamSlide key="team" />,
     <CallToActionSlide key="cta" />
