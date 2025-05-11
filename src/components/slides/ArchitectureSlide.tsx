@@ -1,8 +1,8 @@
 
 import React from 'react';
 import Logo from '../Logo';
-import { useIsMobile } from '@/hooks/use-mobile';
 import { motion } from 'framer-motion';
+import { useIsMobile } from '../../aio-deck-frontend/src/hooks/use-mobile';
 
 const ArchitectureSlide: React.FC = () => {
   const isMobile = useIsMobile();

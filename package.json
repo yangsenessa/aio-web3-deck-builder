@@ -9,5 +9,8 @@
   "scripts": {
     "build": "cd src/aio-deck-frontend && npm run build",
     "deploy": "dfx deploy aio-deck-frontend"
+  },
+  "dependencies": {
+    "framer-motion": "^12.10.5"
   }
 }
