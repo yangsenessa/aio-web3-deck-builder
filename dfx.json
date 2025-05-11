@@ -9,9 +9,10 @@
         "aio-deck-backend"
       ],
       "source": [
-        "dist"
+        "src/aio-deck-frontend/dist"
       ],
-      "type": "assets"
+      "type": "assets",
+      "workspace": "src/aio-deck-frontend"
     }
   },
   "defaults": {

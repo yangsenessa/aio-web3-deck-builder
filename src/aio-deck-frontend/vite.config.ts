@@ -1,4 +1,3 @@
-
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import { fileURLToPath } from 'url';
@@ -10,18 +9,26 @@ const __dirname = dirname(__filename);
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: './', // Change from '/aio-web3-deck-builder/' to './' for relative paths
-  server: {
-    host: "::",
-    port: 8080,
-  },
+  base: './',
   plugins: [
     react(),
     componentTagger(),
   ].filter(Boolean),
   resolve: {
-    alias: {
-      "@": resolve(__dirname, "./src"),
-    },
+    alias: [
+      {
+        find: '@',
+        replacement: resolve(__dirname, 'src')
+      }
+    ]
+  },
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, 'index.html')
+      }
+    }
   },
 });

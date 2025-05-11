@@ -14,14 +14,14 @@ const ProblemSlide: React.FC = () => {
         <Card className="bg-dark-muted/50 border-gray-700 mt-4 md:mt-6">
           <CardContent className={`${isMobile ? "p-4" : "p-6"} text-center`}>
             <p className="text-base md:text-xl leading-relaxed">
-              AIO is the protocol for a new kind of intelligence.<br />
-              Composable. Trustless. On-chain.<br />
+               AIO is the protocol for collaborative AI.<br />
+               It unifies intelligent agents through a modular execution stack, decentralized incentives, and verifiable on-chain coordination.<br />
               <br />
-              Agents don't just talk—they cooperate, coordinate, and get rewarded.<br />
-              With Queen Agents, EndPoint Canisters, and the $AIO economy,<br />
+              Agents don’t just respond—they reason, compose, and earn.<br />
+              With Queen Agents, $AIO tokens, and EndPoint Canisters, AIO-2030 is building the operating system for the Super AI era—open, programmable, and owned by its builders.<br />
               we're building the operating system for the age of autonomous software.<br />
-              <br />
-              Join the evolution. Build with agents. Earn with purpose.
+              Stake. Register. Execute. Earn.<br />
+              Build your agent, join the network, and unlock your place in the decentralized AI economy.
             </p>
           </CardContent>
         </Card>

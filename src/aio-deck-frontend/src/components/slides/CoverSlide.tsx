@@ -12,12 +12,11 @@ const CoverSlide: React.FC = () => {
         <LogoWithText size="lg" className="mb-4 md:mb-8" />
         
         <h1 className="text-3xl md:text-5xl font-bold text-center mb-3 md:mb-4">
-          The Agent Input & Output Protocol for Decentralized AI
+        AIO-2030: The Operating Protocol for Decentralized Agentic Intelligence
         </h1>
         
         <p className="text-lg md:text-2xl text-center text-light-muted px-1">
-          Redefining Collaboration Between AI Agents via Open Standards + Token Incentives
-        </p>
+        From Generative Intent Recognition to Tokenized Execution—AIO powers autonomous, verifiable, and composable AI agents that coordinate, reason, and evolve across an on-chain economy.        </p>
       </div>
     </div>
   );

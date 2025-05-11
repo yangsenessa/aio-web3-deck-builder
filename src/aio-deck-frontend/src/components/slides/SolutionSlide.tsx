@@ -30,18 +30,18 @@ const SolutionSlide: React.FC = () => {
             </CardHeader>
             <CardContent className={`${isMobile ? "card-content-mobile" : ""} flex-grow overflow-auto`}>
               <p className="text-sm md:text-base">
-                The Queen Agent is your autonomous AI conductor—intelligently routing tasks, tracking every move, and rewarding what truly matters. Scalable, transparent, and built for trustless coordination at scale.
+              The Queen Agent is the central orchestrator within the AIO-2030 architecture, functioning as a superintelligent coordination layer that binds user intent with distributed AI capabilities. It encapsulates cognition, reasoning, discovery, execution, and incentive coordination. The Queen Agent transforms task requests into structured execution workflows by leveraging both symbolic and generative reasoning.
               </p>
             </CardContent>
           </Card>
           
           <Card className="bg-dark-muted/50 border-gray-700 flex flex-col">
             <CardHeader className={isMobile ? "card-header-mobile pb-1" : "pb-2"}>
-              <CardTitle className="text-lg md:text-xl">EndPoint Canisters</CardTitle>
+              <CardTitle className="text-lg md:text-xl">On-Chain AIO Canister Contracts</CardTitle>
             </CardHeader>
             <CardContent className={`${isMobile ? "card-content-mobile" : ""} flex-grow overflow-auto`}>
               <p className="text-sm md:text-base">
-                Plug into the AIO network with on-chain, composable AI agents. Staked, identifiable, and ready to serve—each canister is a gateway to interoperable intelligence.
+              The AIO-Canister layer provides the on-chain trust foundation for the AIO-2030 ecosystem. It hosts the registries, execution ledgers, and indexing structures that enable decentralized AI agents to be verifiable, discoverable, and fairly incentivized across the Super AI Network.
               </p>
             </CardContent>
           </Card>
@@ -52,8 +52,7 @@ const SolutionSlide: React.FC = () => {
             </CardHeader>
             <CardContent className={`${isMobile ? "card-content-mobile" : ""} flex-grow overflow-auto`}>
               <p className="text-sm md:text-base">
-                Powered by $AIO, our economy rewards contribution, not computation. Stake to join. Earn to grow. Govern the future—one token at a time.
-              </p>
+              Fuel the future of AI with $AIO. This isn’t just computation—it’s contribution that counts. Stake your tokens, unlock rewards, and rise with the agentic revolution. Own your impact. Earn your share. Power the AI economy—one token at a time.              </p>
             </CardContent>
           </Card>
         </div>
