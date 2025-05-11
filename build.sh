@@ -8,7 +8,9 @@ dfx stop
 dfx start --background --clean
 
 # 安装依赖
+cd src/aio-deck-frontend
 npm install
+cd ../..
 
 # 构建前端
 npm run build
