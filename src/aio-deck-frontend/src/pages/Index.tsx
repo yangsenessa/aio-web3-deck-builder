@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CoverSlide from "../components/slides/CoverSlide";
@@ -20,17 +21,17 @@ const Index = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const slides = [
-    <CoverSlide />,
-    <ProblemSlide />,
-    <SolutionSlide />,
-		<ArchitectureSlide />,
-    <TechnologySlide />,
-    <TokenomicsSlide />,
-    <EcosystemSlide />,
-    <CompetitiveSlide />,
-    <RoadmapSlide />,
-    <TeamSlide />,
-    <CallToActionSlide />,
+    <CoverSlide key="cover" />,
+    <ProblemSlide key="problem" />,
+    <SolutionSlide key="solution" />,
+    <ArchitectureSlide key="architecture" />,
+    <TechnologySlide key="technology" />,
+    <TokenomicsSlide key="tokenomics" />,
+    <EcosystemSlide key="ecosystem" />,
+    <CompetitiveSlide key="competitive" />,
+    <RoadmapSlide key="roadmap" />,
+    <TeamSlide key="team" />,
+    <CallToActionSlide key="cta" />
   ];
 
   const goToPreviousSlide = () => {
@@ -43,8 +44,12 @@ const Index = () => {
     );
   };
 
-  const handleNavigation = (index: number) => {
-    setCurrentSlide(index);
+  const handleNavigation = (direction: 'prev' | 'next') => {
+    if (direction === 'prev') {
+      goToPreviousSlide();
+    } else {
+      goToNextSlide();
+    }
   };
 
   return (
@@ -65,6 +70,7 @@ const Index = () => {
       <button
         onClick={goToPreviousSlide}
         className="absolute left-4 bottom-4 bg-black bg-opacity-50 text-white p-2 rounded"
+        disabled={currentSlide === 0}
       >
         Previous
       </button>
@@ -73,6 +79,7 @@ const Index = () => {
       <button
         onClick={goToNextSlide}
         className="absolute right-4 bottom-4 bg-black bg-opacity-50 text-white p-2 rounded"
+        disabled={currentSlide === slides.length - 1}
       >
         Next
       </button>

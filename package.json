@@ -12,6 +12,7 @@
     "deploy": "dfx deploy aio-deck-frontend"
   },
   "dependencies": {
+    "@radix-ui/react-icons": "^1.3.2",
     "framer-motion": "^12.10.5"
   }
 }
