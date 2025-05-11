@@ -27,7 +27,7 @@ const ArchitectureSlide: React.FC = () => {
             className="w-full h-full"
           >
             <img 
-              src="public/lovable-uploads/d2248865-1a79-4ca4-a94f-cac4529769bb.png" 
+              src="public/lovable-uploads/2ef4d8dc-ba34-4ec3-9690-642c0d8f3c52.png" 
               alt="AIO-Canister Layer Architecture" 
               className="w-full h-auto rounded-lg shadow-[0_0_30px_rgba(137,100,235,0.25)]" 
             />
