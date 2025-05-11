@@ -1,7 +1,6 @@
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '../../hooks/use-mobile';
 
 const SolutionSlide: React.FC = () => {
   const isMobile = useIsMobile();
@@ -13,48 +12,48 @@ const SolutionSlide: React.FC = () => {
         <h3 className="text-lg md:text-2xl mb-4 md:mb-8 text-center text-light-muted">AIO-2030: Unified Protocol + Web3 Incentive Layer</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
-          <Card className="bg-dark-muted/50 border-gray-700 flex flex-col">
-            <CardHeader className={isMobile ? "card-header-mobile pb-1" : "pb-2"}>
-              <CardTitle className="text-lg md:text-xl">AIO Protocol</CardTitle>
-            </CardHeader>
-            <CardContent className={`${isMobile ? "card-content-mobile" : ""} flex-grow overflow-auto`}>
+          <div className="bg-dark-muted/50 border-gray-700 flex flex-col rounded-lg border p-4">
+            <div className={isMobile ? "card-header-mobile pb-1" : "pb-2"}>
+              <h3 className="text-lg md:text-xl">AIO Protocol</h3>
+            </div>
+            <div className={`${isMobile ? "card-content-mobile" : ""} flex-grow overflow-auto`}>
               <p className="text-sm md:text-base">
                 Decentralized collective intelligence, featuring a multi-agent collaboration incentive mechanism, autonomous discovery and connection of agent networks. Through the AIO protocol, incentives are provided and the collective intelligence of agents is mobilized.
               </p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
           
-          <Card className="bg-dark-muted/50 border-gray-700 flex flex-col">
-            <CardHeader className={isMobile ? "card-header-mobile pb-1" : "pb-2"}>
-              <CardTitle className="text-lg md:text-xl">Queen Agent</CardTitle>
-            </CardHeader>
-            <CardContent className={`${isMobile ? "card-content-mobile" : ""} flex-grow overflow-auto`}>
+          <div className="bg-dark-muted/50 border-gray-700 flex flex-col rounded-lg border p-4">
+            <div className={isMobile ? "card-header-mobile pb-1" : "pb-2"}>
+              <h3 className="text-lg md:text-xl">Queen Agent</h3>
+            </div>
+            <div className={`${isMobile ? "card-content-mobile" : ""} flex-grow overflow-auto`}>
               <p className="text-sm md:text-base">
               The Queen Agent is the central orchestrator within the AIO-2030 architecture, functioning as a superintelligent coordination layer that binds user intent with distributed AI capabilities. It encapsulates cognition, reasoning, discovery, execution, and incentive coordination. The Queen Agent transforms task requests into structured execution workflows by leveraging both symbolic and generative reasoning.
               </p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
           
-          <Card className="bg-dark-muted/50 border-gray-700 flex flex-col">
-            <CardHeader className={isMobile ? "card-header-mobile pb-1" : "pb-2"}>
-              <CardTitle className="text-lg md:text-xl">On-Chain AIO Canister Contracts</CardTitle>
-            </CardHeader>
-            <CardContent className={`${isMobile ? "card-content-mobile" : ""} flex-grow overflow-auto`}>
+          <div className="bg-dark-muted/50 border-gray-700 flex flex-col rounded-lg border p-4">
+            <div className={isMobile ? "card-header-mobile pb-1" : "pb-2"}>
+              <h3 className="text-lg md:text-xl">On-Chain AIO Canister Contracts</h3>
+            </div>
+            <div className={`${isMobile ? "card-content-mobile" : ""} flex-grow overflow-auto`}>
               <p className="text-sm md:text-base">
               The AIO-Canister layer provides the on-chain trust foundation for the AIO-2030 ecosystem. It hosts the registries, execution ledgers, and indexing structures that enable decentralized AI agents to be verifiable, discoverable, and fairly incentivized across the Super AI Network.
               </p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
           
-          <Card className="bg-dark-muted/50 border-gray-700 flex flex-col">
-            <CardHeader className={isMobile ? "card-header-mobile pb-1" : "pb-2"}>
-              <CardTitle className="text-lg md:text-xl">Token Economy</CardTitle>
-            </CardHeader>
-            <CardContent className={`${isMobile ? "card-content-mobile" : ""} flex-grow overflow-auto`}>
+          <div className="bg-dark-muted/50 border-gray-700 flex flex-col rounded-lg border p-4">
+            <div className={isMobile ? "card-header-mobile pb-1" : "pb-2"}>
+              <h3 className="text-lg md:text-xl">Token Economy</h3>
+            </div>
+            <div className={`${isMobile ? "card-content-mobile" : ""} flex-grow overflow-auto`}>
               <p className="text-sm md:text-base">
-              Fuel the future of AI with $AIO. This isn’t just computation—it’s contribution that counts. Stake your tokens, unlock rewards, and rise with the agentic revolution. Own your impact. Earn your share. Power the AI economy—one token at a time.              </p>
-            </CardContent>
-          </Card>
+              Fuel the future of AI with $AIO. This isn't just computation—it's contribution that counts. Stake your tokens, unlock rewards, and rise with the agentic revolution. Own your impact. Earn your share. Power the AI economy—one token at a time.              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '../../hooks/use-mobile';
 
 const RoadmapSlide: React.FC = () => {
   const isMobile = useIsMobile();

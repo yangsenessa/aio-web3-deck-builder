@@ -1,7 +1,7 @@
 
 import React from 'react';
 import Logo from './Logo';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '../hooks/use-mobile';
 
 interface LogoWithTextProps {
   size?: string;

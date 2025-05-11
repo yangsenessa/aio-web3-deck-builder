@@ -1,8 +1,7 @@
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Check } from 'lucide-react';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '../../hooks/use-mobile';
 
 const EcosystemSlide: React.FC = () => {
   const isMobile = useIsMobile();
@@ -13,53 +12,53 @@ const EcosystemSlide: React.FC = () => {
         <h2 className="text-2xl md:text-4xl font-bold mb-4 md:mb-8 text-center">Ecosystem Advantage</h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
-          <Card className="bg-dark-muted/50 border-gray-700 flex flex-col">
-            <CardHeader className={isMobile ? "card-header-mobile pb-1" : "pb-2"}>
-              <CardTitle className="text-base md:text-xl flex items-center">
+          <div className="bg-dark-muted/50 border-gray-700 flex flex-col rounded-lg border p-4">
+            <div className={isMobile ? "card-header-mobile pb-1" : "pb-2"}>
+              <h3 className="text-base md:text-xl flex items-center">
                 <Check className="mr-1.5 md:mr-2 h-4 w-4 md:h-5 md:w-5 text-green-500" />
                 Compatible Systems
-              </CardTitle>
-            </CardHeader>
-            <CardContent className={`${isMobile ? "card-content-mobile" : ""} flex-grow overflow-auto`}>
+              </h3>
+            </div>
+            <div className={`${isMobile ? "card-content-mobile" : ""} flex-grow overflow-auto`}>
               <p className="text-sm md:text-base">OpenAI, Claude, HuggingFace</p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
           
-          <Card className="bg-dark-muted/50 border-gray-700 flex flex-col">
-            <CardHeader className={isMobile ? "card-header-mobile pb-1" : "pb-2"}>
-              <CardTitle className="text-base md:text-xl flex items-center">
+          <div className="bg-dark-muted/50 border-gray-700 flex flex-col rounded-lg border p-4">
+            <div className={isMobile ? "card-header-mobile pb-1" : "pb-2"}>
+              <h3 className="text-base md:text-xl flex items-center">
                 <Check className="mr-1.5 md:mr-2 h-4 w-4 md:h-5 md:w-5 text-green-500" />
                 API Integration
-              </CardTitle>
-            </CardHeader>
-            <CardContent className={`${isMobile ? "card-content-mobile" : ""} flex-grow overflow-auto`}>
+              </h3>
+            </div>
+            <div className={`${isMobile ? "card-content-mobile" : ""} flex-grow overflow-auto`}>
               <p className="text-sm md:text-base">Doubao, Coze, POE, Eliza via API/Webhook</p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
           
-          <Card className="bg-dark-muted/50 border-gray-700 flex flex-col">
-            <CardHeader className={isMobile ? "card-header-mobile pb-1" : "pb-2"}>
-              <CardTitle className="text-base md:text-xl flex items-center">
+          <div className="bg-dark-muted/50 border-gray-700 flex flex-col rounded-lg border p-4">
+            <div className={isMobile ? "card-header-mobile pb-1" : "pb-2"}>
+              <h3 className="text-base md:text-xl flex items-center">
                 <Check className="mr-1.5 md:mr-2 h-4 w-4 md:h-5 md:w-5 text-green-500" />
                 Open Registration
-              </CardTitle>
-            </CardHeader>
-            <CardContent className={`${isMobile ? "card-content-mobile" : ""} flex-grow overflow-auto`}>
+              </h3>
+            </div>
+            <div className={`${isMobile ? "card-content-mobile" : ""} flex-grow overflow-auto`}>
               <p className="text-sm md:text-base">Via Docker, API, Web IDE</p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
           
-          <Card className="bg-dark-muted/50 border-gray-700 flex flex-col">
-            <CardHeader className={isMobile ? "card-header-mobile pb-1" : "pb-2"}>
-              <CardTitle className="text-base md:text-xl flex items-center">
+          <div className="bg-dark-muted/50 border-gray-700 flex flex-col rounded-lg border p-4">
+            <div className={isMobile ? "card-header-mobile pb-1" : "pb-2"}>
+              <h3 className="text-base md:text-xl flex items-center">
                 <Check className="mr-1.5 md:mr-2 h-4 w-4 md:h-5 md:w-5 text-green-500" />
                 Future Expansion
-              </CardTitle>
-            </CardHeader>
-            <CardContent className={`${isMobile ? "card-content-mobile" : ""} flex-grow overflow-auto`}>
+              </h3>
+            </div>
+            <div className={`${isMobile ? "card-content-mobile" : ""} flex-grow overflow-auto`}>
               <p className="text-sm md:text-base">AgentHub marketplace launching Q4</p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
         
         <div className="mt-6 md:mt-10 text-center">

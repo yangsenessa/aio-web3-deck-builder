@@ -1,7 +1,7 @@
 
 import React from 'react';
+import { useIsMobile } from '../../hooks/use-mobile';
 import LogoWithText from '../LogoWithText';
-import { useIsMobile } from '@/hooks/use-mobile';
 
 const CoverSlide: React.FC = () => {
   const isMobile = useIsMobile();

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { ChevronUp, ChevronDown } from 'lucide-react';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '../hooks/use-mobile';
 
 interface NavigationProps {
   totalSlides: number;

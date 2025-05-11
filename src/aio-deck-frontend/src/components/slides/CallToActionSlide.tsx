@@ -1,8 +1,8 @@
 
 import React from 'react';
-import Logo from '../Logo';
 import { Check } from 'lucide-react';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '../../hooks/use-mobile';
+import Logo from '../Logo';
 
 const CallToActionSlide: React.FC = () => {
   const isMobile = useIsMobile();
