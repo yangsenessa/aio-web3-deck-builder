@@ -10,7 +10,7 @@ const __dirname = dirname(__filename);
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: './', // Change from '/aio-web3-deck-builder/' to './' for relative paths
+  base: './', // Use relative paths for better compatibility
   server: {
     host: "::",
     port: 8080,
