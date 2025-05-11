@@ -32,10 +32,6 @@ const ResizablePanel = React.forwardRef<
 ));
 ResizablePanel.displayName = "ResizablePanel";
 
-interface ResizableHandleProps extends React.HTMLAttributes<HTMLDivElement> {
-  withHandle?: boolean;
-}
-
 const ResizableHandle = React.forwardRef<
   React.ElementRef<typeof ResizablePrimitive.PanelResizeHandle>,
   React.ComponentPropsWithoutRef<typeof ResizablePrimitive.PanelResizeHandle> & {
