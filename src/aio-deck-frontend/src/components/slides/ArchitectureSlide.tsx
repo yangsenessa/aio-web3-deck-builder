@@ -38,13 +38,13 @@ const ArchitectureSlide: React.FC = () => {
           className="mt-6 md:mt-10 grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-4 text-center"
         >
           <div className="rounded-xl p-3 bg-gradient-to-br from-web3blue/70 via-web3pink/40 to-web3purple/70 border border-web3pink/60 shadow-neon-pink backdrop-blur-md">
-            <p className="font-medium text-sm md:text-base text-white">Fully on-chain traceability</p>
+            <p className="font-medium text-sm md:text-base text-white">Fully on-chain traceability<br className="hidden md:block" />(privacy protected, fairly executed, distributed)</p>
           </div>
           <div className="rounded-xl p-3 bg-gradient-to-br from-web3purple/70 via-web3blue/40 to-web3pink/70 border border-web3blue/60 shadow-neon-blue backdrop-blur-md">
             <p className="font-medium text-sm md:text-base text-white">Multi-modal task support<br className="hidden md:block" />(text/image/code/audio)</p>
           </div>
           <div className="rounded-xl p-3 bg-gradient-to-br from-web3pink/70 via-web3purple/40 to-web3blue/70 border border-web3purple/60 shadow-neon-purple backdrop-blur-md">
-            <p className="font-medium text-sm md:text-base text-white">Agents run via<br className="hidden md:block" />Docker / KVM / API</p>
+            <p className="font-medium text-sm md:text-base text-white">Agents run via<br className="hidden md:block" />AIO-POD / Cloud / Caniter</p>
           </div>
         </motion.div>
       </div>

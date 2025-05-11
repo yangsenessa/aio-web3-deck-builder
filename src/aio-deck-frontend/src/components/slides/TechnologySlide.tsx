@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { useIsMobile } from '../../hooks/use-mobile';
+import { FaBullseye, FaLink, FaRocket, FaPuzzlePiece, FaNetworkWired, FaCoins } from 'react-icons/fa';
 
 const TechnologySlide: React.FC = () => {
   const isMobile = useIsMobile();
@@ -8,81 +9,95 @@ const TechnologySlide: React.FC = () => {
   return (
     <div id="slide-5" className="slide flex flex-col items-center justify-center bg-dark relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-pink-500/10 animate-pulse"></div>
-      <div className="max-w-4xl w-full relative z-10">
+      <div className="max-w-5xl w-full relative z-10">
         <h2 className="text-3xl md:text-4xl font-bold mb-4 md:mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 drop-shadow-[0_2px_16px_rgba(0,0,0,0.7)]">
-          Technology Stack
+          AIO Protocol Technology Stack
         </h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
-          <Card className="rounded-xl p-4 md:p-6 bg-gradient-to-br from-blue-900/70 via-purple-800/60 to-pink-900/70 border border-blue-500/40 shadow-neon-blue backdrop-blur-md text-white hover:shadow-[0_0_24px_4px_rgba(59,130,246,0.3)] transition-all duration-300">
-            <CardHeader className="p-0 mb-2">
-              <CardTitle className="text-lg md:text-xl font-bold text-blue-300">Protocol Layer</CardTitle>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+          {/* Application Layer */}
+          <Card className="rounded-xl p-5 md:p-7 bg-gradient-to-br from-blue-900/80 via-purple-800/70 to-pink-900/80 border border-blue-400/40 shadow-neon-blue backdrop-blur-md text-white hover:shadow-[0_0_32px_6px_rgba(59,130,246,0.3)] transition-all duration-300">
+            <CardHeader className="p-0 mb-2 flex items-center gap-2">
+              <FaBullseye className="text-2xl text-blue-300" />
+              <CardTitle className="text-lg md:text-xl font-bold text-blue-200">Application Layer</CardTitle>
             </CardHeader>
             <CardContent className="p-0 pb-2">
-              <p className="text-sm md:text-base text-white/90">JSON-RPC + namespace.method + trace_id</p>
-              <div className="mt-2 h-1 w-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-pulse"></div>
+              <div className="font-semibold text-blue-200 mb-1">Intent Gateway</div>
+              <p className="text-sm md:text-base text-white/90">Translates user goals into actionable tasks.</p>
+              <p className="italic text-xs md:text-sm text-blue-100 mt-1">Empowers seamless, goal-driven user experiences.</p>
+              <div className="mt-2 h-1 w-full bg-gradient-to-r from-blue-400 to-purple-400 rounded-full animate-pulse"></div>
             </CardContent>
           </Card>
-          
-          <Card className="rounded-xl p-4 md:p-6 bg-gradient-to-br from-green-900/70 via-teal-800/60 to-blue-900/70 border border-green-500/40 shadow-neon-green backdrop-blur-md text-white hover:shadow-[0_0_24px_4px_rgba(34,197,94,0.3)] transition-all duration-300">
-            <CardHeader className="p-0 mb-2">
-              <CardTitle className="text-lg md:text-xl font-bold text-green-300">Transport Layer</CardTitle>
+          {/* Protocol Layer */}
+          <Card className="rounded-xl p-5 md:p-7 bg-gradient-to-br from-blue-900/70 via-purple-800/60 to-pink-900/70 border border-blue-500/40 shadow-neon-blue backdrop-blur-md text-white hover:shadow-[0_0_32px_6px_rgba(59,130,246,0.3)] transition-all duration-300">
+            <CardHeader className="p-0 mb-2 flex items-center gap-2">
+              <FaLink className="text-2xl text-purple-300" />
+              <CardTitle className="text-lg md:text-xl font-bold text-purple-200">Protocol Layer</CardTitle>
             </CardHeader>
             <CardContent className="p-0 pb-2">
-              <p className="text-sm md:text-base text-white/90">stdio / SSE / HTTP</p>
+              <div className="font-semibold text-purple-200 mb-1">Traceable Messaging</div>
+              <p className="text-sm md:text-base text-white/90">Ensures consistent, observable agent communication.</p>
+              <p className="italic text-xs md:text-sm text-purple-100 mt-1">Guarantees full traceability and interoperability.</p>
+              <div className="mt-2 h-1 w-full bg-gradient-to-r from-purple-400 to-blue-400 rounded-full animate-pulse"></div>
+            </CardContent>
+          </Card>
+          {/* Transport Layer */}
+          <Card className="rounded-xl p-5 md:p-7 bg-gradient-to-br from-green-900/80 via-teal-800/70 to-blue-900/80 border border-green-400/40 shadow-neon-green backdrop-blur-md text-white hover:shadow-[0_0_32px_6px_rgba(34,197,94,0.3)] transition-all duration-300">
+            <CardHeader className="p-0 mb-2 flex items-center gap-2">
+              <FaRocket className="text-2xl text-green-300" />
+              <CardTitle className="text-lg md:text-xl font-bold text-green-200">Transport Layer</CardTitle>
+            </CardHeader>
+            <CardContent className="p-0 pb-2">
+              <div className="font-semibold text-green-200 mb-1">Multi-Channel Delivery</div>
+              <p className="text-sm md:text-base text-white/90">Adapts to any environment: stdio, HTTP, SSE.</p>
+              <p className="italic text-xs md:text-sm text-green-100 mt-1">Flexible, efficient agent connectivity everywhere.</p>
               <div className="mt-2 h-1 w-full bg-gradient-to-r from-green-400 to-teal-400 rounded-full animate-pulse"></div>
             </CardContent>
           </Card>
-          
-          <Card className="rounded-xl p-4 md:p-6 bg-gradient-to-br from-yellow-900/70 via-orange-800/60 to-pink-900/70 border border-yellow-500/40 shadow-neon-yellow backdrop-blur-md text-white hover:shadow-[0_0_24px_4px_rgba(234,179,8,0.3)] transition-all duration-300">
-            <CardHeader className="p-0 mb-2">
-              <CardTitle className="text-lg md:text-xl font-bold text-yellow-300">Execution Layer</CardTitle>
+          {/* Execution Layer */}
+          <Card className="rounded-xl p-5 md:p-7 bg-gradient-to-br from-yellow-900/80 via-orange-800/70 to-pink-900/80 border border-yellow-400/40 shadow-neon-yellow backdrop-blur-md text-white hover:shadow-[0_0_32px_6px_rgba(234,179,8,0.3)] transition-all duration-300">
+            <CardHeader className="p-0 mb-2 flex items-center gap-2">
+              <FaPuzzlePiece className="text-2xl text-yellow-300" />
+              <CardTitle className="text-lg md:text-xl font-bold text-yellow-200">Execution Layer</CardTitle>
             </CardHeader>
             <CardContent className="p-0 pb-2">
-              <p className="text-sm md:text-base text-white/90">Docker / Wasm / Cloud API</p>
+              <div className="font-semibold text-yellow-200 mb-1">Trustless Deployment</div>
+              <p className="text-sm md:text-base text-white/90">Runs agents securely across pods, Wasm, APIs.</p>
+              <p className="italic text-xs md:text-sm text-yellow-100 mt-1">Maximizes flexibility and security for all agents.</p>
               <div className="mt-2 h-1 w-full bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full animate-pulse"></div>
             </CardContent>
           </Card>
-          
-          <Card className="rounded-xl p-4 md:p-6 bg-gradient-to-br from-pink-900/70 via-red-800/60 to-purple-900/70 border border-pink-500/40 shadow-neon-pink backdrop-blur-md text-white hover:shadow-[0_0_24px_4px_rgba(236,72,153,0.3)] transition-all duration-300">
-            <CardHeader className="p-0 mb-2">
-              <CardTitle className="text-lg md:text-xl font-bold text-pink-300">Ledger Layer</CardTitle>
+          {/* Coordination Layer */}
+          <Card className="rounded-xl p-5 md:p-7 bg-gradient-to-br from-purple-900/80 via-blue-800/70 to-pink-900/80 border border-purple-400/40 shadow-neon-purple backdrop-blur-md text-white hover:shadow-[0_0_32px_6px_rgba(168,85,247,0.3)] transition-all duration-300">
+            <CardHeader className="p-0 mb-2 flex items-center gap-2">
+              <FaNetworkWired className="text-2xl text-purple-300" />
+              <CardTitle className="text-lg md:text-xl font-bold text-purple-200">Coordination Layer</CardTitle>
             </CardHeader>
             <CardContent className="p-0 pb-2">
-              <p className="text-sm md:text-base text-white/90">ICP + Canister Smart Contracts</p>
+              <div className="font-semibold text-purple-200 mb-1">Autonomous Orchestration</div>
+              <p className="text-sm md:text-base text-white/90">Smart contracts drive scheduling and validation.</p>
+              <p className="italic text-xs md:text-sm text-purple-100 mt-1">Ensures fair, transparent, and efficient workflows.</p>
+              <div className="mt-2 h-1 w-full bg-gradient-to-r from-purple-400 to-blue-400 rounded-full animate-pulse"></div>
+            </CardContent>
+          </Card>
+          {/* Ledger Layer */}
+          <Card className="rounded-xl p-5 md:p-7 bg-gradient-to-br from-pink-900/80 via-red-800/70 to-purple-900/80 border border-pink-400/40 shadow-neon-pink backdrop-blur-md text-white hover:shadow-[0_0_32px_6px_rgba(236,72,153,0.3)] transition-all duration-300">
+            <CardHeader className="p-0 mb-2 flex items-center gap-2">
+              <FaCoins className="text-2xl text-pink-300" />
+              <CardTitle className="text-lg md:text-xl font-bold text-pink-200">Ledger Layer</CardTitle>
+            </CardHeader>
+            <CardContent className="p-0 pb-2">
+              <div className="font-semibold text-pink-200 mb-1">Tokenized Accountability</div>
+              <p className="text-sm md:text-base text-white/90">On-chain proof, rewards, and cross-chain support.</p>
+              <p className="italic text-xs md:text-sm text-pink-100 mt-1">Secures the ecosystem with verifiable incentives.</p>
               <div className="mt-2 h-1 w-full bg-gradient-to-r from-pink-400 to-red-400 rounded-full animate-pulse"></div>
             </CardContent>
           </Card>
         </div>
-        
-        <div className="mt-4 md:mt-8 rounded-xl p-4 md:p-6 bg-gradient-to-br from-blue-900/60 via-purple-800/40 to-pink-900/60 border border-purple-500/30 shadow-neon-purple backdrop-blur-md">
-          <h3 className="text-lg md:text-xl font-medium mb-3 md:mb-4 text-center bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-blue-400 to-pink-400 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">Integration Layers</h3>
-          <div className="flex flex-wrap md:flex-row justify-between space-y-2 md:space-y-0 gap-2">
-            <div className="text-center w-[calc(25%-0.25rem)] md:w-auto group">
-              <div className="h-10 w-10 md:h-12 md:w-12 rounded-full bg-blue-800/80 flex items-center justify-center mx-auto mb-2 group-hover:bg-blue-500/80 transition-all duration-300 group-hover:shadow-[0_0_15px_rgba(59,130,246,0.5)]">
-                <span className="text-lg text-blue-200 font-bold">1</span>
-              </div>
-              <p className="text-sm md:text-base text-white/90">Define</p>
-            </div>
-            <div className="text-center w-[calc(25%-0.25rem)] md:w-auto group">
-              <div className="h-10 w-10 md:h-12 md:w-12 rounded-full bg-green-800/80 flex items-center justify-center mx-auto mb-2 group-hover:bg-green-500/80 transition-all duration-300 group-hover:shadow-[0_0_15px_rgba(34,197,94,0.5)]">
-                <span className="text-lg text-green-200 font-bold">2</span>
-              </div>
-              <p className="text-sm md:text-base text-white/90">Transport</p>
-            </div>
-            <div className="text-center w-[calc(25%-0.25rem)] md:w-auto group">
-              <div className="h-10 w-10 md:h-12 md:w-12 rounded-full bg-yellow-800/80 flex items-center justify-center mx-auto mb-2 group-hover:bg-yellow-400/80 transition-all duration-300 group-hover:shadow-[0_0_15px_rgba(234,179,8,0.5)]">
-                <span className="text-lg text-yellow-200 font-bold">3</span>
-              </div>
-              <p className="text-sm md:text-base text-white/90">Execute</p>
-            </div>
-            <div className="text-center w-[calc(25%-0.25rem)] md:w-auto group">
-              <div className="h-10 w-10 md:h-12 md:w-12 rounded-full bg-pink-800/80 flex items-center justify-center mx-auto mb-2 group-hover:bg-pink-500/80 transition-all duration-300 group-hover:shadow-[0_0_15px_rgba(236,72,153,0.5)]">
-                <span className="text-lg text-pink-200 font-bold">4</span>
-              </div>
-              <p className="text-sm md:text-base text-white/90">Verify & Reward</p>
-            </div>
-          </div>
+        {/* Summary/USP */}
+        <div className="mt-3 md:mt-5 rounded-xl p-3 md:p-4 bg-gradient-to-br from-blue-900/60 via-purple-800/40 to-pink-900/60 border border-purple-500/30 shadow-neon-purple backdrop-blur-md text-center">
+          <h3 className="text-lg md:text-xl font-medium mb-2 md:mb-3 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-blue-400 to-pink-400 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">Why AIO Protocol Stands Out</h3>
+          <p className="text-sm md:text-base text-white/90 mb-1">Semantic-first design, full traceability, universal connectivity, trustless orchestration, and tokenized incentives.</p>
+          <p className="text-xs md:text-sm text-white/70">AIO Protocol: The next-generation, trust-agnostic, and fully tokenized AI agent network.</p>
         </div>
       </div>
     </div>
