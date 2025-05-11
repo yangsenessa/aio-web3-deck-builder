@@ -1,0 +1,26 @@
+{
+  "canisters": {
+    "aio-deck-backend": {
+      "main": "src/aio-deck-backend/main.mo",
+      "type": "motoko"
+    },
+    "aio-deck-frontend": {
+      "dependencies": [
+        "aio-deck-backend"
+      ],
+      "source": [
+        "src/aio-deck-frontend/dist"
+      ],
+      "type": "assets",
+      "workspace": "aio-deck-frontend"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}
