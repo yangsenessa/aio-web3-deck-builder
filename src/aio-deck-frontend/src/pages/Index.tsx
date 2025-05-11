@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CoverSlide from "../components/slides/CoverSlide";
@@ -53,10 +52,12 @@ const Index = () => {
   };
 
   return (
-    <div className="relative h-screen overflow-hidden">
-      {/* Slide Content */}
-      <div className="absolute top-0 left-0 w-full h-full">
-        {slides[currentSlide]}
+    <div className="min-h-screen flex flex-col items-center justify-center bg-web3dark bg-gradient-radial font-sans">
+      {/* Slide Content 居中显示 */}
+      <div className="w-full flex-1 flex items-center justify-center">
+        <div className="w-full max-w-4xl rounded-2xl p-8 bg-gradient-to-br from-web3blue/80 via-web3pink/60 to-web3purple/80 border-2 border-web3pink shadow-neon-pink backdrop-blur-md">
+          {slides[currentSlide]}
+        </div>
       </div>
 
       {/* Navigation Component */}
@@ -66,23 +67,23 @@ const Index = () => {
         onNavigate={handleNavigation}
       />
 
-      {/* Previous Button */}
-      <button
-        onClick={goToPreviousSlide}
-        className="absolute left-4 bottom-4 bg-black bg-opacity-50 text-white p-2 rounded"
-        disabled={currentSlide === 0}
-      >
-        Previous
-      </button>
-
-      {/* Next Button */}
-      <button
-        onClick={goToNextSlide}
-        className="absolute right-4 bottom-4 bg-black bg-opacity-50 text-white p-2 rounded"
-        disabled={currentSlide === slides.length - 1}
-      >
-        Next
-      </button>
+      {/* Previous/Next Buttons 固定底部 */}
+      <div className="w-full flex justify-between px-4 pb-4">
+        <button
+          onClick={goToPreviousSlide}
+          className="px-8 py-4 text-lg font-bold rounded-full bg-gradient-to-r from-web3blue via-web3pink to-web3purple text-white shadow-neon hover:scale-105 hover:shadow-lg transition-all duration-300"
+          disabled={currentSlide === 0}
+        >
+          Previous
+        </button>
+        <button
+          onClick={goToNextSlide}
+          className="px-8 py-4 text-lg font-bold rounded-full bg-gradient-to-r from-web3blue via-web3pink to-web3purple text-white shadow-neon hover:scale-105 hover:shadow-lg transition-all duration-300"
+          disabled={currentSlide === slides.length - 1}
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 };

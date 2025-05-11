@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Check } from 'lucide-react';
 import { useIsMobile } from '../../hooks/use-mobile';
@@ -7,65 +6,60 @@ const EcosystemSlide: React.FC = () => {
   const isMobile = useIsMobile();
   
   return (
-    <div id="slide-7" className="slide flex flex-col items-center justify-center bg-dark p-4 md:p-8">
-      <div className="max-w-4xl w-full">
-        <h2 className="text-2xl md:text-4xl font-bold mb-4 md:mb-8 text-center">Ecosystem Advantage</h2>
-        
+    <div id="slide-7" className="min-h-screen flex flex-col items-center justify-center bg-web3dark bg-gradient-radial font-sans p-4 md:p-8">
+      <div className="max-w-4xl w-full rounded-2xl p-8 bg-gradient-to-br from-web3blue/80 via-web3pink/60 to-web3purple/80 border-2 border-web3pink shadow-neon-pink backdrop-blur-md">
+        <h2 className="text-4xl md:text-5xl font-extrabold mb-4 md:mb-8 bg-gradient-to-r from-web3blue via-web3pink to-web3purple bg-clip-text text-transparent drop-shadow-neon animate-gradient-x text-center">Ecosystem Advantage</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
-          <div className="bg-dark-muted/50 border-gray-700 flex flex-col rounded-lg border p-4">
+          <div className="rounded-xl p-4 bg-gradient-to-br from-web3blue/70 via-web3pink/40 to-web3purple/70 border border-web3pink/60 shadow-neon-pink backdrop-blur-md flex flex-col">
             <div className={isMobile ? "card-header-mobile pb-1" : "pb-2"}>
-              <h3 className="text-base md:text-xl flex items-center">
-                <Check className="mr-1.5 md:mr-2 h-4 w-4 md:h-5 md:w-5 text-green-500" />
+              <h3 className="text-base md:text-xl flex items-center text-white">
+                <Check className="mr-1.5 md:mr-2 h-4 w-4 md:h-5 md:w-5 text-green-400" />
                 Compatible Systems
               </h3>
             </div>
             <div className={`${isMobile ? "card-content-mobile" : ""} flex-grow overflow-auto`}>
-              <p className="text-sm md:text-base">OpenAI, Claude, HuggingFace</p>
+              <p className="text-sm md:text-base text-white/90">OpenAI, Claude, HuggingFace</p>
             </div>
           </div>
-          
-          <div className="bg-dark-muted/50 border-gray-700 flex flex-col rounded-lg border p-4">
+          <div className="rounded-xl p-4 bg-gradient-to-br from-web3purple/70 via-web3blue/40 to-web3pink/70 border border-web3blue/60 shadow-neon-blue backdrop-blur-md flex flex-col">
             <div className={isMobile ? "card-header-mobile pb-1" : "pb-2"}>
-              <h3 className="text-base md:text-xl flex items-center">
-                <Check className="mr-1.5 md:mr-2 h-4 w-4 md:h-5 md:w-5 text-green-500" />
+              <h3 className="text-base md:text-xl flex items-center text-white">
+                <Check className="mr-1.5 md:mr-2 h-4 w-4 md:h-5 md:w-5 text-green-400" />
                 API Integration
               </h3>
             </div>
             <div className={`${isMobile ? "card-content-mobile" : ""} flex-grow overflow-auto`}>
-              <p className="text-sm md:text-base">Doubao, Coze, POE, Eliza via API/Webhook</p>
+              <p className="text-sm md:text-base text-white/90">Doubao, Coze, POE, Eliza via API/Webhook</p>
             </div>
           </div>
-          
-          <div className="bg-dark-muted/50 border-gray-700 flex flex-col rounded-lg border p-4">
+          <div className="rounded-xl p-4 bg-gradient-to-br from-web3pink/70 via-web3purple/40 to-web3blue/70 border border-web3purple/60 shadow-neon-purple backdrop-blur-md flex flex-col">
             <div className={isMobile ? "card-header-mobile pb-1" : "pb-2"}>
-              <h3 className="text-base md:text-xl flex items-center">
-                <Check className="mr-1.5 md:mr-2 h-4 w-4 md:h-5 md:w-5 text-green-500" />
+              <h3 className="text-base md:text-xl flex items-center text-white">
+                <Check className="mr-1.5 md:mr-2 h-4 w-4 md:h-5 md:w-5 text-green-400" />
                 Open Registration
               </h3>
             </div>
             <div className={`${isMobile ? "card-content-mobile" : ""} flex-grow overflow-auto`}>
-              <p className="text-sm md:text-base">Via Docker, API, Web IDE</p>
+              <p className="text-sm md:text-base text-white/90">Via Docker, API, Web IDE</p>
             </div>
           </div>
-          
-          <div className="bg-dark-muted/50 border-gray-700 flex flex-col rounded-lg border p-4">
+          <div className="rounded-xl p-4 bg-gradient-to-br from-web3blue/70 via-web3pink/40 to-web3purple/70 border border-web3pink/60 shadow-neon-pink backdrop-blur-md flex flex-col">
             <div className={isMobile ? "card-header-mobile pb-1" : "pb-2"}>
-              <h3 className="text-base md:text-xl flex items-center">
-                <Check className="mr-1.5 md:mr-2 h-4 w-4 md:h-5 md:w-5 text-green-500" />
+              <h3 className="text-base md:text-xl flex items-center text-white">
+                <Check className="mr-1.5 md:mr-2 h-4 w-4 md:h-5 md:w-5 text-green-400" />
                 Future Expansion
               </h3>
             </div>
             <div className={`${isMobile ? "card-content-mobile" : ""} flex-grow overflow-auto`}>
-              <p className="text-sm md:text-base">AgentHub marketplace launching Q4</p>
+              <p className="text-sm md:text-base text-white/90">AgentHub marketplace launching Q4</p>
             </div>
           </div>
         </div>
-        
         <div className="mt-6 md:mt-10 text-center">
-          <p className="text-base md:text-lg text-light-muted mb-3">Unified integration for ALL AI agents and services</p>
+          <p className="text-base md:text-lg text-white/80 mb-3">Unified integration for ALL AI agents and services</p>
           <div className="flex flex-wrap justify-center gap-2">
             {["OpenAI", "Claude", "HuggingFace", "Doubao", "Coze", "Eliza", "POE"].map((service) => (
-              <span key={service} className="px-2 md:px-3 py-0.5 md:py-1 bg-dark-muted/50 border border-gray-700 rounded-full text-xs md:text-sm">
+              <span key={service} className="px-2 md:px-3 py-0.5 md:py-1 bg-gradient-to-br from-web3blue/60 via-web3pink/30 to-web3purple/60 border border-web3pink/60 rounded-full text-xs md:text-sm text-white/90 backdrop-blur-md">
                 {service}
               </span>
             ))}
