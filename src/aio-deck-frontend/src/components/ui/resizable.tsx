@@ -32,16 +32,16 @@ const ResizablePanel = React.forwardRef<
 ));
 ResizablePanel.displayName = "ResizablePanel";
 
-// Fix the withHandle prop by extending the interface correctly
+// Define a proper interface for the custom props
 interface ResizableHandleProps 
-  extends Omit<React.ComponentPropsWithoutRef<typeof ResizablePrimitive.PanelResizeHandle>, 'children'> {
+  extends React.ComponentPropsWithoutRef<typeof ResizablePrimitive.PanelResizeHandle> {
   withHandle?: boolean;
 }
 
 const ResizableHandle = React.forwardRef<
   React.ElementRef<typeof ResizablePrimitive.PanelResizeHandle>,
   ResizableHandleProps
->(({ className, withHandle = false, ...props }, ref) => (
+>(({ className, withHandle = false, children, ...props }, ref) => (
   <ResizablePrimitive.PanelResizeHandle
     ref={ref}
     className={cn(
@@ -55,6 +55,7 @@ const ResizableHandle = React.forwardRef<
         <DragHandleDots2Icon className="h-2.5 w-2.5" />
       </div>
     )}
+    {children}
   </ResizablePrimitive.PanelResizeHandle>
 ));
 ResizableHandle.displayName = "ResizableHandle";
