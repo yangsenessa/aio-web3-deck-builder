@@ -8,7 +8,7 @@ const CompetitiveSlide: React.FC = () => {
   return (
     <div id="slide-8" className="min-h-screen flex flex-col items-center justify-center bg-web3dark bg-gradient-radial font-sans p-4 md:p-8">
       <div className="max-w-4xl w-full rounded-2xl p-8 bg-gradient-to-br from-web3blue/80 via-web3pink/60 to-web3purple/80 border-2 border-web3pink shadow-neon-pink backdrop-blur-md">
-        <h2 className="text-4xl md:text-5xl font-extrabold mb-4 md:mb-6 bg-gradient-to-r from-web3blue via-web3pink to-web3purple bg-clip-text text-transparent drop-shadow-neon animate-gradient-x text-center">Competitive Edge</h2>
+        <h2 className="text-4xl md:text-5xl font-extrabold mb-4 md:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-pink-400 to-purple-400 drop-shadow-[0_2px_16px_rgba(0,0,0,0.85)] animate-gradient-x text-center">Competitive Edge</h2>
         <div className="overflow-x-auto -mx-4 px-4">
           <table className="w-full border-collapse min-w-[640px] rounded-xl bg-gradient-to-br from-web3blue/60 via-web3pink/30 to-web3purple/60 shadow-neon-pink backdrop-blur-md">
             <thead>

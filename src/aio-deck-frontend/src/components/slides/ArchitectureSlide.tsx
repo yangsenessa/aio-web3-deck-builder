@@ -13,7 +13,7 @@ const ArchitectureSlide: React.FC = () => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-4xl md:text-5xl font-extrabold mb-4 bg-gradient-to-r from-web3blue via-web3pink to-web3purple bg-clip-text text-transparent drop-shadow-neon animate-gradient-x text-center"
+          className="text-4xl md:text-5xl font-extrabold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-pink-400 to-purple-400 drop-shadow-[0_2px_16px_rgba(0,0,0,0.85)] animate-gradient-x text-center"
         >
           AIO-Canister Layer Architecture
         </motion.h2>
@@ -25,7 +25,7 @@ const ArchitectureSlide: React.FC = () => {
             className="w-full h-full"
           >
             <img 
-              src="public/lovable-uploads/2ef4d8dc-ba34-4ec3-9690-642c0d8f3c52.png" 
+              src="/AIO-Canister-Layer-Architecture.png" 
               alt="AIO-Canister Layer Architecture" 
               className="w-full h-auto rounded-lg shadow-neon" 
             />
