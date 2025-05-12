@@ -62,5 +62,4 @@ const ArchitectureSlide: React.FC = () => {
     </div>
   );
 };
-
 export default ArchitectureSlide;
