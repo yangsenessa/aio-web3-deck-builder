@@ -71,6 +71,17 @@ const TeamSlide: React.FC = () => {
           <p className="text-base md:text-lg text-white/90">Building the future of AI coordination through distributed governance</p>
         </div>
       </div>
+      {/* Press & Join Button */}
+      <div className="w-full mt-8">
+        <a
+          href="https://aio2030.fun"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block w-full text-lg font-bold rounded-xl bg-gradient-to-r from-pink-400 via-yellow-300 to-blue-400 text-white shadow-lg hover:scale-[1.01] hover:shadow-2xl transition-all duration-300 border-2 border-white/30 outline-none focus:ring-4 focus:ring-pink-200 py-4 text-center"
+        >
+          Press & Join
+        </a>
+      </div>
     </div>
   );
 };

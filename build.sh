@@ -16,4 +16,4 @@ cd ../..
 npm run build
 
 # 部署前端
-npm run deploy
+dfx deploy aio-deck-frontend

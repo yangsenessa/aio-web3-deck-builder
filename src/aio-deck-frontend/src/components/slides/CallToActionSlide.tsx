@@ -44,11 +44,11 @@ const CallToActionSlide: React.FC = () => {
               </div>
               <div className="flex items-center justify-center md:justify-start">
                 <p className="mr-1 md:mr-2 text-sm md:text-base text-white/80">Website:</p>
-                <a href="https://aio2030.fun" target="_blank" rel="noopener noreferrer" className="text-sm md:text-base text-blue-200 hover:underline">aio2030.io</a>
+                <a href="https://aio2030.fun" target="_blank" rel="noopener noreferrer" className="text-sm md:text-base text-blue-200 hover:underline">https://aio2030.fun</a>
               </div>
               <div className="flex items-center justify-center md:justify-start">
                 <p className="mr-1 md:mr-2 text-sm md:text-base text-white/80">Discord:</p>
-                <a href="https://discord.com/channels/1199163706983067648/1364458688743608400" target="_blank" rel="noopener noreferrer" className="text-sm md:text-base text-blue-200 hover:underline">aio2030.io</a>
+                <a href="https://discord.com/channels/1199163706983067648/1364458688743608400" target="_blank" rel="noopener noreferrer" className="text-sm md:text-base text-blue-200 hover:underline">Discord:AIO-2030</a>
               </div>
             </div>
             <div className="flex items-center space-x-3 md:space-x-4">
@@ -56,6 +56,16 @@ const CallToActionSlide: React.FC = () => {
               <div className="text-xl md:text-2xl font-bold text-white">AIO-2030</div>
             </div>
           </div>
+        </div>
+        <div className="w-full flex justify-center mt-8">
+          <a
+            href="https://aio2030.fun"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block w-full text-lg font-bold rounded-xl bg-gradient-to-r from-pink-400 via-yellow-300 to-blue-400 text-white shadow-lg hover:scale-[1.01] hover:shadow-2xl transition-all duration-300 border-2 border-white/30 outline-none focus:ring-4 focus:ring-pink-200 py-4 text-center"
+          >
+            Press & Join
+          </a>
         </div>
       </div>
     </div>
