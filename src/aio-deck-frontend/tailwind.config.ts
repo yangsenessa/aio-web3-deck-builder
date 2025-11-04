@@ -64,6 +64,22 @@ export default {
         graph: {
           base: "#e5e5e0",
           accent: "#ffffff"
+        },
+        aio: {
+          dark: "#0E1117",
+          darker: "#0B0F14",
+          text: {
+            primary: "#E6EAF2",
+            secondary: "#9AA4B2",
+            muted: "#6B7280"
+          },
+          gradient: {
+            from: "#4F46E5",
+            to: "#8B5CF6"
+          },
+          success: "#10B981",
+          warning: "#F59E0B",
+          danger: "#EF4444"
         }
       },
       borderRadius: {
