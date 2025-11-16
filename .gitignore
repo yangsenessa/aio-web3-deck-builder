@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# DFX / Internet Computer
+.dfx/
+*.wasm
+*.wasm.gz
+.env
+.env.local
+canister_ids.json

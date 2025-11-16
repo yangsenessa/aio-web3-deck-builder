@@ -5,36 +5,71 @@ const ProblemSlide: React.FC = () => {
   const isMobile = useIsMobile();
   
   return (
-    <div id="slide-2" className="min-h-screen flex flex-col items-center justify-center bg-web3dark bg-gradient-radial font-sans p-4 md:p-8">
-      <div className="max-w-4xl w-full rounded-2xl p-8 bg-gradient-to-br from-web3blue/80 via-web3pink/60 to-web3purple/80 border-2 border-web3pink shadow-neon-pink backdrop-blur-md">
-        <h2 className="text-4xl md:text-5xl font-extrabold mb-2 md:mb-4 text-blue-400 drop-shadow-[0_2px_16px_rgba(0,0,0,0.85)] text-center">
-          What's AIO?
+    <div id="slide-2" className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 font-sans p-4 md:p-8 relative overflow-hidden">
+      {/* Subtle pixel texture */}
+      <div className="absolute inset-0 opacity-[0.03]" style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='1' height='1' fill='%23fff'/%3E%3C/svg%3E")`,
+      }}></div>
+
+      <div className="max-w-5xl w-full rounded-2xl p-8 md:p-12 bg-gradient-to-br from-slate-900/90 via-blue-900/40 to-slate-800/90 border border-cyan-500/20 shadow-[0_0_40px_rgba(6,182,212,0.15)] backdrop-blur-xl relative z-10">
+        <h2 className="text-4xl md:text-6xl font-bold mb-8 md:mb-12 text-white text-center tracking-tight">
+          Why AIO-2030?
         </h2>
-        <div className="bg-gradient-to-br from-web3blue/60 via-web3pink/30 to-web3purple/60 border border-web3pink/60 mt-4 md:mt-6 rounded-lg backdrop-blur-md">
-          <div className={`${isMobile ? "p-4" : "p-6"} text-center`}>
-            <p className="text-base md:text-xl leading-relaxed text-white/90">
-               AIO is the protocol for collaborative AI.<br />
-               It unifies intelligent agents through a modular execution stack, decentralized incentives, and verifiable on-chain coordination.<br />
-              <br />
-              Agents don't just respond—they reason, compose, and earn.<br />
-              With Queen Agents, $AIO tokens, and EndPoint Canisters, AIO-2030 is building the operating system for the Super AI era—open, programmable, and owned by its builders.<br />
-              we're building the operating system for the age of autonomous software.<br />
-              Stake. Register. Execute. Earn.<br />
-              Build your agent, join the network, and unlock your place in the decentralized AI economy.
+        
+        <div className="space-y-6 md:space-y-8 max-w-3xl mx-auto">
+          <div className="flex items-start gap-4 p-6 rounded-xl bg-slate-800/50 border border-cyan-500/20 hover:border-cyan-500/40 transition-all">
+            <div className="flex-shrink-0 w-2 h-2 rounded-full bg-cyan-400 mt-2 shadow-[0_0_8px_rgba(6,182,212,0.6)]"></div>
+            <p className="text-lg md:text-xl text-slate-200 leading-relaxed">
+              AI value should not be defined by platform ownership or capital.
+            </p>
+          </div>
+          
+          <div className="flex items-start gap-4 p-6 rounded-xl bg-slate-800/50 border border-cyan-500/20 hover:border-cyan-500/40 transition-all">
+            <div className="flex-shrink-0 w-2 h-2 rounded-full bg-cyan-400 mt-2 shadow-[0_0_8px_rgba(6,182,212,0.6)]"></div>
+            <p className="text-lg md:text-xl text-slate-200 leading-relaxed">
+              Technology should be valued when it is seen, used, and experienced.
+            </p>
+          </div>
+          
+          <div className="flex items-start gap-4 p-6 rounded-xl bg-slate-800/50 border border-cyan-500/20 hover:border-cyan-500/40 transition-all">
+            <div className="flex-shrink-0 w-2 h-2 rounded-full bg-cyan-400 mt-2 shadow-[0_0_8px_rgba(6,182,212,0.6)]"></div>
+            <p className="text-lg md:text-xl text-slate-200 leading-relaxed">
+              AIO restores fairness and transparency to how AI is accessed and rewarded.
             </p>
           </div>
         </div>
-      </div>
-      {/* Press & Join Button */}
-      <div className="w-full mt-8">
-        <a
-          href="https://aio2030.fun"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block w-full text-lg font-bold rounded-xl bg-gradient-to-r from-pink-400 via-yellow-300 to-blue-400 text-white shadow-lg hover:scale-[1.01] hover:shadow-2xl transition-all duration-300 border-2 border-white/30 outline-none focus:ring-4 focus:ring-pink-200 py-4 text-center"
-        >
-          Press & Join
-        </a>
+
+        {/* Visual: Human ↔ AI ↔ Device connection */}
+        <div className="mt-12 flex items-center justify-center gap-4 md:gap-8">
+          <div className="flex flex-col items-center">
+            <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border-2 border-cyan-400/40 flex items-center justify-center">
+              <span className="text-2xl md:text-3xl">👤</span>
+            </div>
+            <span className="text-xs md:text-sm text-slate-400 mt-2">Human</span>
+          </div>
+          
+          <div className="flex-1 h-0.5 bg-gradient-to-r from-cyan-500/40 via-cyan-400/60 to-cyan-500/40 relative">
+            <div className="absolute inset-0 bg-cyan-400/20 animate-pulse"></div>
+          </div>
+          
+          <div className="flex flex-col items-center">
+            <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border-2 border-cyan-400/40 flex items-center justify-center">
+              <span className="text-2xl md:text-3xl">🤖</span>
+            </div>
+            <span className="text-xs md:text-sm text-slate-400 mt-2">AI Agent</span>
+          </div>
+          
+          <div className="flex-1 h-0.5 bg-gradient-to-r from-cyan-500/40 via-cyan-400/60 to-cyan-500/40 relative">
+            <div className="absolute inset-0 bg-cyan-400/20 animate-pulse"></div>
+          </div>
+          
+          <div className="flex flex-col items-center">
+            <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border-2 border-cyan-400/40 flex items-center justify-center">
+              <span className="text-2xl md:text-3xl">📱</span>
+            </div>
+            <span className="text-xs md:text-sm text-slate-400 mt-2">Device</span>
+          </div>
+        </div>
       </div>
     </div>
   );

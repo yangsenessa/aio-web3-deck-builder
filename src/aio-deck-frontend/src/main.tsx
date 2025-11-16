@@ -1,3 +1,11 @@
+import { Buffer } from 'buffer';
+
+// Polyfill Buffer for browser environment
+if (typeof window !== 'undefined') {
+  (window as any).Buffer = Buffer;
+  (window as any).global = window;
+  (window as any).process = { env: {} };
+}
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';

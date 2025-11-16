@@ -5,68 +5,60 @@ const SolutionSlide: React.FC = () => {
   const isMobile = useIsMobile();
   
   return (
-    <div id="slide-3" className="slide flex flex-col items-center justify-center bg-dark relative overflow-hidden p-4 md:p-8">
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-pink-500/10 animate-pulse"></div>
-      <div className="max-w-4xl w-full relative z-10">
-        <h2 className="text-3xl md:text-4xl font-extrabold mb-2 text-center bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 drop-shadow-[0_2px_16px_rgba(0,0,0,0.7)]">
-          Solution
+    <div id="slide-3" className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 font-sans p-4 md:p-8 relative overflow-hidden">
+      {/* Subtle pixel texture */}
+      <div className="absolute inset-0 opacity-[0.03]" style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='1' height='1' fill='%23fff'/%3E%3C/svg%3E")`,
+      }}></div>
+
+      <div className="max-w-5xl w-full rounded-2xl p-8 md:p-12 bg-gradient-to-br from-slate-900/90 via-blue-900/40 to-slate-800/90 border border-cyan-500/20 shadow-[0_0_40px_rgba(6,182,212,0.15)] backdrop-blur-xl relative z-10">
+        <h2 className="text-4xl md:text-6xl font-bold mb-4 md:mb-6 text-white text-center tracking-tight">
+          AIO-2030
         </h2>
-        <h3 className="text-lg md:text-2xl mb-4 md:mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-pink-400 via-blue-400 to-purple-400 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">
-          AIO-2030: Unified Protocol + Web3 Incentive Layer
+        <h3 className="text-xl md:text-2xl font-medium mb-8 md:mb-12 text-cyan-400/90 text-center">
+          (Super AI Decentralized Network)
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
-          <div className="rounded-xl p-4 md:p-6 bg-gradient-to-br from-blue-900/70 via-purple-800/60 to-pink-900/70 border border-blue-500/40 shadow-neon-blue backdrop-blur-md text-white hover:shadow-[0_0_24px_4px_rgba(59,130,246,0.3)] transition-all duration-300">
-            <div className={isMobile ? "card-header-mobile pb-1" : "pb-2"}>
-              <h3 className="text-lg md:text-xl font-bold text-blue-300">AIO Protocol</h3>
-            </div>
-            <div className={`${isMobile ? "card-content-mobile" : ""} flex-grow overflow-auto`}>
-              <p className="text-sm md:text-base text-white/90">
-                Decentralized collective intelligence, featuring a multi-agent collaboration incentive mechanism, autonomous discovery and connection of agent networks. Through the AIO protocol, incentives are provided and the collective intelligence of agents is mobilized.
-              </p>
-            </div>
+        
+        <div className="space-y-6 md:space-y-8 max-w-3xl mx-auto">
+          <div className="flex items-start gap-4 p-6 rounded-xl bg-slate-800/50 border border-cyan-500/20 hover:border-cyan-500/40 transition-all">
+            <div className="flex-shrink-0 w-2 h-2 rounded-full bg-cyan-400 mt-2 shadow-[0_0_8px_rgba(6,182,212,0.6)]"></div>
+            <p className="text-lg md:text-xl text-slate-200 leading-relaxed">
+              A distributed intelligence interaction protocol.
+            </p>
           </div>
-          <div className="rounded-xl p-4 md:p-6 bg-gradient-to-br from-purple-900/70 via-blue-800/60 to-pink-900/70 border border-purple-500/40 shadow-neon-purple backdrop-blur-md text-white hover:shadow-[0_0_24px_4px_rgba(168,85,247,0.3)] transition-all duration-300">
-            <div className={isMobile ? "card-header-mobile pb-1" : "pb-2"}>
-              <h3 className="text-lg md:text-xl font-bold text-purple-300">Queen Agent</h3>
-            </div>
-            <div className={`${isMobile ? "card-content-mobile" : ""} flex-grow overflow-auto`}>
-              <p className="text-sm md:text-base text-white/90">
-              The Queen Agent is the central orchestrator within the AIO-2030 architecture, functioning as a superintelligent coordination layer that binds user intent with distributed AI capabilities. It encapsulates cognition, reasoning, discovery, execution, and incentive coordination. The Queen Agent transforms task requests into structured execution workflows by leveraging both symbolic and generative reasoning.
-              </p>
-            </div>
+          
+          <div className="flex items-start gap-4 p-6 rounded-xl bg-slate-800/50 border border-cyan-500/20 hover:border-cyan-500/40 transition-all">
+            <div className="flex-shrink-0 w-2 h-2 rounded-full bg-cyan-400 mt-2 shadow-[0_0_8px_rgba(6,182,212,0.6)]"></div>
+            <p className="text-lg md:text-xl text-slate-200 leading-relaxed">
+              Enables humans, AI agents, and connected devices to collaborate.
+            </p>
           </div>
-          <div className="rounded-xl p-4 md:p-6 bg-gradient-to-br from-pink-900/70 via-purple-800/60 to-blue-900/70 border border-pink-500/40 shadow-neon-pink backdrop-blur-md text-white hover:shadow-[0_0_24px_4px_rgba(236,72,153,0.3)] transition-all duration-300">
-            <div className={isMobile ? "card-header-mobile pb-1" : "pb-2"}>
-              <h3 className="text-lg md:text-xl font-bold text-pink-300">On-Chain AIO Canister Contracts</h3>
-            </div>
-            <div className={`${isMobile ? "card-content-mobile" : ""} flex-grow overflow-auto`}>
-              <p className="text-sm md:text-base text-white/90">
-              The AIO-Canister layer provides the on-chain trust foundation for the AIO-2030 ecosystem. It hosts the registries, execution ledgers, and indexing structures that enable decentralized AI agents to be verifiable, discoverable, and fairly incentivized across the Super AI Network.
-              </p>
-            </div>
-          </div>
-          <div className="rounded-xl p-4 md:p-6 bg-gradient-to-br from-blue-900/70 via-pink-800/60 to-purple-900/70 border border-blue-500/40 shadow-neon-blue backdrop-blur-md text-white hover:shadow-[0_0_24px_4px_rgba(59,130,246,0.3)] transition-all duration-300">
-            <div className={isMobile ? "card-header-mobile pb-1" : "pb-2"}>
-              <h3 className="text-lg md:text-xl font-bold text-blue-300">Token Economy</h3>
-            </div>
-            <div className={`${isMobile ? "card-content-mobile" : ""} flex-grow overflow-auto`}>
-              <p className="text-sm md:text-base text-white/90">
-              Fuel the future of AI with $AIO. This isn't just computation—it's contribution that counts. Stake your tokens, unlock rewards, and rise with the agentic revolution. Own your impact. Earn your share. Power the AI economy—one token at a time.
-              </p>
-            </div>
+          
+          <div className="flex items-start gap-4 p-6 rounded-xl bg-slate-800/50 border border-cyan-500/20 hover:border-cyan-500/40 transition-all">
+            <div className="flex-shrink-0 w-2 h-2 rounded-full bg-cyan-400 mt-2 shadow-[0_0_8px_rgba(6,182,212,0.6)]"></div>
+            <p className="text-lg md:text-xl text-slate-200 leading-relaxed">
+              Provides on-chain identity, verifiable execution, and fair incentive distribution.
+            </p>
           </div>
         </div>
-      </div>
-      {/* Press & Join Button */}
-      <div className="w-full mt-8">
-        <a
-          href="https://aio2030.fun"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block w-full text-lg font-bold rounded-xl bg-gradient-to-r from-pink-400 via-yellow-300 to-blue-400 text-white shadow-lg hover:scale-[1.01] hover:shadow-2xl transition-all duration-300 border-2 border-white/30 outline-none focus:ring-4 focus:ring-pink-200 py-4 text-center"
-        >
-          Press & Join
-        </a>
+
+        {/* Visual: Network map representing multi-agent collaboration */}
+        <div className="mt-12 flex items-center justify-center">
+          <div className="grid grid-cols-3 gap-4 md:gap-8">
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => (
+              <div key={i} className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border-2 border-cyan-400/40 flex items-center justify-center relative">
+                <div className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.8)]"></div>
+                {/* Connection lines */}
+                {i % 3 !== 0 && (
+                  <div className="absolute right-0 top-1/2 w-4 md:w-8 h-0.5 bg-gradient-to-r from-cyan-500/40 to-transparent"></div>
+                )}
+                {i <= 6 && (
+                  <div className="absolute bottom-0 left-1/2 h-4 md:h-8 w-0.5 bg-gradient-to-b from-cyan-500/40 to-transparent"></div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

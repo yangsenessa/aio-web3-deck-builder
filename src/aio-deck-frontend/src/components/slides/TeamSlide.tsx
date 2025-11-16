@@ -1,86 +1,85 @@
 import React from 'react';
 import { useIsMobile } from '../../hooks/use-mobile';
+import { ArrowRight, ArrowLeft } from 'lucide-react';
 
 const TeamSlide: React.FC = () => {
   const isMobile = useIsMobile();
   
+  const flywheelSteps = [
+    'Interaction',
+    '$AIO distribution',
+    'Brand token expansion',
+    'Cultural and economic amplification',
+    'More participation',
+    'Repeat'
+  ];
+  
   return (
-    <div id="slide-10" className="slide flex flex-col items-center justify-center bg-dark relative overflow-hidden p-4 md:p-8">
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-pink-500/10 animate-pulse"></div>
-      <div className="max-w-4xl w-full relative z-10">
-        <h2 className="text-3xl md:text-4xl font-extrabold mb-4 md:mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 drop-shadow-[0_2px_16px_rgba(0,0,0,0.7)]">Team & Governance</h2>
+    <div id="slide-9" className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 font-sans p-4 md:p-8 relative overflow-hidden">
+      {/* Subtle pixel texture */}
+      <div className="absolute inset-0 opacity-[0.03]" style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='1' height='1' fill='%23fff'/%3E%3C/svg%3E")`,
+      }}></div>
+
+      <div className="max-w-6xl w-full rounded-2xl p-8 md:p-12 bg-gradient-to-br from-slate-900/90 via-blue-900/40 to-slate-800/90 border border-cyan-500/20 shadow-[0_0_40px_rgba(6,182,212,0.15)] backdrop-blur-xl relative z-10">
+        <h2 className="text-4xl md:text-6xl font-bold mb-8 md:mb-12 text-white text-center tracking-tight">
+          Dual Flywheel Economy
+        </h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
-          <div className="rounded-xl p-4 md:p-6 bg-gradient-to-br from-blue-900/70 via-purple-800/60 to-pink-900/70 border border-blue-500/40 shadow-neon-blue backdrop-blur-md text-white">
-            <h3 className="text-lg md:text-xl font-bold mb-3 md:mb-6 text-center text-blue-300">Core Team</h3>
-            
-            <div className="space-y-3 md:space-y-6">
-              <div className="flex items-center gap-2 md:gap-4">
-                <div className="h-8 w-8 md:h-12 md:w-12 rounded-full bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 shadow-neon-blue flex-shrink-0"></div>
-                <div>
-                  <h4 className="font-medium text-sm md:text-base text-white">Web3 Infrastructure Architects</h4>
-                  <p className="text-xs md:text-sm text-blue-200/80">15+ years combined experience in blockchain</p>
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-2 md:gap-4">
-                <div className="h-8 w-8 md:h-12 md:w-12 rounded-full bg-gradient-to-br from-purple-500 via-blue-500 to-pink-500 shadow-neon-purple flex-shrink-0"></div>
-                <div>
-                  <h4 className="font-medium text-sm md:text-base text-white">AI Platform Veterans</h4>
-                  <p className="text-xs md:text-sm text-purple-200/80">Former leads at major LLM platforms</p>
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-2 md:gap-4">
-                <div className="h-8 w-8 md:h-12 md:w-12 rounded-full bg-gradient-to-br from-pink-500 via-purple-500 to-blue-500 shadow-neon-pink flex-shrink-0"></div>
-                <div>
-                  <h4 className="font-medium text-sm md:text-base text-white">Protocol Engineers</h4>
-                  <p className="text-xs md:text-sm text-pink-200/80">Specialized in cross-chain interoperability</p>
-                </div>
+        {/* Two interlocking flywheels */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 mb-12">
+          {/* $AIO Flywheel */}
+          <div className="relative">
+            <div className="p-8 rounded-xl bg-slate-800/50 border-2 border-cyan-500/30">
+              <h3 className="text-2xl md:text-3xl font-bold text-cyan-400 mb-6 text-center">$AIO</h3>
+              <div className="space-y-3">
+                {flywheelSteps.slice(0, 3).map((step, idx) => (
+                  <div key={idx} className="flex items-center gap-3 p-3 rounded-lg bg-slate-700/50">
+                    <div className="w-2 h-2 rounded-full bg-cyan-400"></div>
+                    <span className="text-slate-200">{step}</span>
+                  </div>
+                ))}
               </div>
             </div>
+            {/* Rotating ring */}
+            <div className="absolute -inset-2 rounded-xl border-2 border-cyan-500/20 animate-spin" style={{ animationDuration: '15s' }}></div>
           </div>
           
-          <div className="rounded-xl p-4 md:p-6 bg-gradient-to-br from-purple-900/70 via-blue-800/60 to-pink-900/70 border border-purple-500/40 shadow-neon-purple backdrop-blur-md text-white">
-            <h3 className="text-lg md:text-xl font-bold mb-3 md:mb-6 text-center text-purple-300">Governance</h3>
-            
-            <div className="space-y-2 md:space-y-4">
-              <div className="border-l-4 border-blue-400 pl-4 py-1">
-                <h4 className="font-medium text-sm md:text-base text-blue-200">SNS-compliant DAO</h4>
-                <p className="text-xs md:text-sm text-white/80">Launch in Q3 2025</p>
-              </div>
-              
-              <div className="border-l-4 border-green-400 pl-4 py-1">
-                <h4 className="font-medium text-sm md:text-base text-green-200">$AIO Token Governance</h4>
-                <ul className="text-xs md:text-sm text-white/80 mt-1 list-disc list-inside pl-1">
-                  <li>Proposal submission</li>
-                  <li>Community voting</li>
-                  <li>Reward distribution control</li>
-                </ul>
-              </div>
-              
-              <div className="border-l-4 border-pink-400 pl-4 py-1">
-                <h4 className="font-medium text-sm md:text-base text-pink-200">Protocol Evolution</h4>
-                <p className="text-xs md:text-sm text-white/80">Community-driven improvement proposals</p>
+          {/* Brand Tokens Flywheel */}
+          <div className="relative">
+            <div className="p-8 rounded-xl bg-slate-800/50 border-2 border-blue-500/30">
+              <h3 className="text-2xl md:text-3xl font-bold text-blue-400 mb-6 text-center">Brand Tokens</h3>
+              <div className="space-y-3">
+                {flywheelSteps.slice(3).map((step, idx) => (
+                  <div key={idx} className="flex items-center gap-3 p-3 rounded-lg bg-slate-700/50">
+                    <div className="w-2 h-2 rounded-full bg-blue-400"></div>
+                    <span className="text-slate-200">{step}</span>
+                  </div>
+                ))}
               </div>
             </div>
+            {/* Rotating ring */}
+            <div className="absolute -inset-2 rounded-xl border-2 border-blue-500/20 animate-spin" style={{ animationDuration: '12s', animationDirection: 'reverse' }}></div>
           </div>
         </div>
         
-        <div className="mt-4 md:mt-8 text-center">
-          <p className="text-base md:text-lg text-white/90">Building the future of AI coordination through distributed governance</p>
+        {/* Flow visualization */}
+        <div className="flex items-center justify-center gap-4">
+          <div className="text-center">
+            <div className="text-2xl font-bold text-cyan-400 mb-2">$AIO</div>
+            <div className="text-sm text-slate-400">Protocol Token</div>
+          </div>
+          <ArrowRight className="w-8 h-8 text-cyan-400/60" />
+          <div className="text-center">
+            <div className="text-2xl font-bold text-blue-400 mb-2">Brand Tokens</div>
+            <div className="text-sm text-slate-400">Cultural Expression</div>
+          </div>
+          <ArrowLeft className="w-8 h-8 text-blue-400/60" />
         </div>
-      </div>
-      {/* Press & Join Button */}
-      <div className="w-full mt-8">
-        <a
-          href="https://aio2030.fun"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block w-full text-lg font-bold rounded-xl bg-gradient-to-r from-pink-400 via-yellow-300 to-blue-400 text-white shadow-lg hover:scale-[1.01] hover:shadow-2xl transition-all duration-300 border-2 border-white/30 outline-none focus:ring-4 focus:ring-pink-200 py-4 text-center"
-        >
-          Press & Join
-        </a>
+        
+        <p className="text-center mt-8 text-lg text-slate-300">
+          <span className="text-cyan-400 font-semibold">$AIO</span> drives user interaction ↔ <span className="text-blue-400 font-semibold">Brand Token</span> drives cultural expression & community expansion
+        </p>
       </div>
     </div>
   );

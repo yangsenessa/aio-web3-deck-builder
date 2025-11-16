@@ -1,65 +1,101 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { useIsMobile } from '../../hooks/use-mobile';
-import Logo from '../Logo';
+import { ArrowDown } from 'lucide-react';
 
 const ArchitectureSlide: React.FC = () => {
-  const isMobile = useIsMobile();
   
   return (
-    <div id="slide-4" className="min-h-screen flex flex-col items-center justify-center bg-web3dark bg-gradient-radial font-sans p-4 md:p-8">
-      <div className="max-w-4xl w-full rounded-2xl p-8 bg-gradient-to-br from-web3blue/80 via-web3pink/60 to-web3purple/80 border-2 border-web3pink shadow-neon-pink backdrop-blur-md">
+    <div id="slide-5" className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 font-sans p-4 md:p-8 relative overflow-hidden">
+      {/* Subtle pixel texture */}
+      <div className="absolute inset-0 opacity-[0.03]" style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='1' height='1' fill='%23fff'/%3E%3C/svg%3E")`,
+      }}></div>
+
+      <div className="max-w-6xl w-full rounded-2xl p-8 md:p-12 bg-gradient-to-br from-slate-900/90 via-blue-900/40 to-slate-800/90 border border-cyan-500/20 shadow-[0_0_40px_rgba(6,182,212,0.15)] backdrop-blur-xl relative z-10">
         <motion.h2 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-4xl md:text-5xl font-extrabold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-pink-400 to-purple-400 drop-shadow-[0_2px_16px_rgba(0,0,0,0.85)] animate-gradient-x text-center"
+          className="text-4xl md:text-6xl font-bold mb-12 text-white text-center tracking-tight"
         >
-          AIO-Canister Layer Architecture
+          One System, Three Layers
         </motion.h2>
-        <div className="relative mx-auto w-full max-w-3xl p-3 md:p-6">
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            className="w-full h-full"
+        
+        <div className="space-y-6 md:space-y-8">
+          {/* Layer 1: ICP */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="p-6 md:p-8 rounded-xl bg-gradient-to-br from-slate-800/80 to-slate-900/80 border-2 border-cyan-500/30 shadow-[0_0_20px_rgba(6,182,212,0.2)]"
           >
-            <img 
-              src="/AIO-Canister-Layer-Architecture.png" 
-              alt="AIO-Canister Layer Architecture" 
-              className="w-full h-auto rounded-lg shadow-neon" 
-            />
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-12 h-12 rounded-lg bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center">
+                <span className="text-2xl font-bold text-cyan-400">1</span>
+              </div>
+              <h3 className="text-2xl md:text-3xl font-bold text-white">ICP Layer — Compute & State</h3>
+            </div>
+            <p className="text-lg md:text-xl text-slate-300 ml-16">Large-scale execution & persistent memory for AI agents.</p>
+          </motion.div>
+
+          {/* Arrow */}
+          <div className="flex justify-center">
+            <ArrowDown className="w-8 h-8 text-cyan-400/60" />
+          </div>
+
+          {/* Layer 2: Base + x402 */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="p-6 md:p-8 rounded-xl bg-gradient-to-br from-slate-800/80 to-slate-900/80 border-2 border-cyan-500/30 shadow-[0_0_20px_rgba(6,182,212,0.2)]"
+          >
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-12 h-12 rounded-lg bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center">
+                <span className="text-2xl font-bold text-cyan-400">2</span>
+              </div>
+              <h3 className="text-2xl md:text-3xl font-bold text-white">Base + x402 — Payment & Settlement</h3>
+            </div>
+            <p className="text-lg md:text-xl text-slate-300 ml-16">Micro-subscriptions, PoI event recording, fee routing.</p>
+          </motion.div>
+
+          {/* Arrow */}
+          <div className="flex justify-center">
+            <ArrowDown className="w-8 h-8 text-cyan-400/60" />
+          </div>
+
+          {/* Layer 3: Solana / BNB */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+            className="p-6 md:p-8 rounded-xl bg-gradient-to-br from-slate-800/80 to-slate-900/80 border-2 border-cyan-500/30 shadow-[0_0_20px_rgba(6,182,212,0.2)]"
+          >
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-12 h-12 rounded-lg bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center">
+                <span className="text-2xl font-bold text-cyan-400">3</span>
+              </div>
+              <h3 className="text-2xl md:text-3xl font-bold text-white">Solana / BNB / Expression Chains</h3>
+            </div>
+            <p className="text-lg md:text-xl text-slate-300 ml-16">Cultural tokens, community expansion, brand identity growth.</p>
           </motion.div>
         </div>
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-6 md:mt-10 grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-4 text-center"
-        >
-          <div className="rounded-xl p-3 bg-gradient-to-br from-web3blue/70 via-web3pink/40 to-web3purple/70 border border-web3pink/60 shadow-neon-pink backdrop-blur-md">
-            <p className="font-medium text-sm md:text-base text-white">Fully on-chain traceability<br className="hidden md:block" />(privacy protected, fairly executed, distributed)</p>
+
+        {/* Visual: Data + value flow arrows */}
+        <div className="mt-12 flex items-center justify-center gap-4 text-cyan-400/60">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></div>
+            <span className="text-sm">Data Flow</span>
           </div>
-          <div className="rounded-xl p-3 bg-gradient-to-br from-web3purple/70 via-web3blue/40 to-web3pink/70 border border-web3blue/60 shadow-neon-blue backdrop-blur-md">
-            <p className="font-medium text-sm md:text-base text-white">Multi-modal task support<br className="hidden md:block" />(text/image/code/audio)</p>
+          <div className="w-px h-4 bg-slate-600"></div>
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></div>
+            <span className="text-sm">Value Flow</span>
           </div>
-          <div className="rounded-xl p-3 bg-gradient-to-br from-web3pink/70 via-web3purple/40 to-web3blue/70 border border-web3purple/60 shadow-neon-purple backdrop-blur-md">
-            <p className="font-medium text-sm md:text-base text-white">Agents run via<br className="hidden md:block" />AIO-POD / Cloud / Caniter</p>
-          </div>
-        </motion.div>
-      </div>
-      {/* Press & Join Button */}
-      <div className="w-full mt-8">
-        <a
-          href="https://aio2030.fun"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block w-full text-lg font-bold rounded-xl bg-gradient-to-r from-pink-400 via-yellow-300 to-blue-400 text-white shadow-lg hover:scale-[1.01] hover:shadow-2xl transition-all duration-300 border-2 border-white/30 outline-none focus:ring-4 focus:ring-pink-200 py-4 text-center"
-        >
-          Press & Join
-        </a>
+        </div>
       </div>
     </div>
   );
 };
+
 export default ArchitectureSlide;

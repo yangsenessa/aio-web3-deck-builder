@@ -54,7 +54,7 @@ const AboutAIO: React.FC = () => {
           About AIO2030
         </h1>
         <p className="text-slate-400">
-          Comprehensive project presentation and deck
+          Comprehensive project presentation deck
         </p>
       </div>
 

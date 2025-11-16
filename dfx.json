@@ -6,7 +6,7 @@
     },
     "aio-deck-frontend": {
       "dependencies": [
-
+        "aio-deck-backend"
       ],
       "source": [
         "src/aio-deck-frontend/dist"
