@@ -10,6 +10,8 @@ export interface Record {
   aioRewards: number;
   pmugAirdrop: number;
   status: string; // "completed" | "claimed" | "pending"
+  airdropWalletAddress?: string | null; // 空投钱包地址，默认为 null
+  airdropNetwork?: string | null; // 空投网络，默认为 "Solana"
 }
 
 // 分页查询结果类型
@@ -67,6 +69,12 @@ interface RecordsService {
   getPendingClaimSummary: () => Promise<PendingClaimSummary>;
   getPendingRecordByWallet: (walletAddress: string) => Promise<[] | [Record]>;
   getDeviceActivationData: () => Promise<DeviceActivationData[]>;
+  updateAirdropWalletAddress: (
+    recordId: string,
+    walletAddress: string,
+    airdropWalletAddress: string,
+    network: [] | [string]
+  ) => Promise<[boolean, [] | [Record]]>;
 }
 
 // 获取后端 canister ID
@@ -112,6 +120,8 @@ const createRecordsActor = async (): Promise<RecordsService> => {
       aioRewards: IDL.Float64,
       pmugAirdrop: IDL.Float64,
       status: IDL.Text,
+      airdropWalletAddress: IDL.Opt(IDL.Text),
+      airdropNetwork: IDL.Opt(IDL.Text),
     });
 
     const PaginatedResultType = IDL.Record({
@@ -178,6 +188,11 @@ const createRecordsActor = async (): Promise<RecordsService> => {
         [],
         [IDL.Vec(DeviceActivationDataType)],
         ['query']
+      ),
+      updateAirdropWalletAddress: IDL.Func(
+        [IDL.Text, IDL.Text, IDL.Text, IDL.Opt(IDL.Text)],
+        [IDL.Bool, IDL.Opt(RecordType)],
+        []
       ),
     });
   };
@@ -453,6 +468,41 @@ export const useRecords = () => {
     []
   );
 
+  // 更新空投钱包地址
+  const updateAirdropWalletAddress = useCallback(
+    async (
+      recordId: string,
+      walletAddress: string,
+      airdropWalletAddress: string,
+      network?: string
+    ): Promise<Record | null> => {
+      setLoading(true);
+      setError(null);
+      try {
+        const actor = await createRecordsActor();
+        const networkParam = network ? [network] : [];
+        const [success, result] = await actor.updateAirdropWalletAddress(
+          recordId,
+          walletAddress,
+          airdropWalletAddress,
+          networkParam
+        );
+        if (success && result && result.length > 0) {
+          return result[0];
+        }
+        return null;
+      } catch (err: any) {
+        const errorMessage = err?.message || '更新空投钱包地址失败';
+        setError(errorMessage);
+        console.error('更新空投钱包地址错误:', err);
+        return null;
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
+
   return {
     loading,
     error,
@@ -464,6 +514,7 @@ export const useRecords = () => {
     getPendingClaimSummary,
     getPendingRecordByWallet,
     getDeviceActivationData,
+    updateAirdropWalletAddress,
   };
 };
 

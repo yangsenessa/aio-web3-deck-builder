@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { Mic, Zap, Check, Clock, Sparkles, Globe, Wifi, Home, Lightbulb } from "lucide-react";
 import { useToast } from "../hooks/use-toast";
 import { useContract } from "../hooks/useContract";
@@ -14,6 +14,16 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "../components/ui/pagination";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "../components/ui/dialog";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
 import WalletConnectionDialog from "../components/WalletConnectionDialog";
 
 interface Activity {
@@ -24,12 +34,14 @@ interface Activity {
   pmugAirdrop: number; // $PMUG airdrop
   status: "pending" | "completed" | "claimed" | "failed";
   walletAddress?: string; // 钱包地址，不展示
+  airdropWalletAddress?: string | null; // 空投钱包地址
+  airdropNetwork?: string | null; // 空投网络
 }
 
 const AIOPage: React.FC = () => {
   const { toast } = useToast();
   const { contract } = useContract(); // useContract 会自动在初始化时获取合约
-  const { createRecord, updateRecord, getRecordsPaginated, getRecordsByWalletPaginated, getDeviceActivationData, getPendingRecordByWallet } = useRecords();
+  const { createRecord, updateRecord, getRecordsPaginated, getRecordsByWalletPaginated, getDeviceActivationData, getPendingRecordByWallet, updateAirdropWalletAddress } = useRecords();
   const [paymentStatus, setPaymentStatus] = useState<"idle" | "processing" | "success">("idle");
   const [prompt, setPrompt] = useState("");
   const [isRecording, setIsRecording] = useState(false);
@@ -49,6 +61,12 @@ const AIOPage: React.FC = () => {
   const [pendingClaimSummary, setPendingClaimSummary] = useState<{ totalAioRewards: number; totalPmugAirdrop: number; pendingCount: number } | null>(null); // 待claim资金汇总
   const [isClaiming, setIsClaiming] = useState(false); // 是否正在claim
   const [claimTxHash, setClaimTxHash] = useState<`0x${string}` | null>(null); // Claim 交易哈希
+  const [airdropDialogOpen, setAirdropDialogOpen] = useState(false); // 空投钱包地址对话框是否打开
+  const [currentActivityForAirdrop, setCurrentActivityForAirdrop] = useState<Activity | null>(null); // 当前要设置空投地址的活动记录
+  const [airdropWalletAddressInput, setAirdropWalletAddressInput] = useState(""); // 输入的空投钱包地址
+  const [coffeeCupDialogOpen, setCoffeeCupDialogOpen] = useState(false); // 咖啡杯弹窗是否打开
+  const [displayPrompt, setDisplayPrompt] = useState(""); // 要显示的prompt文本
+  const canvasRef = useRef<HTMLCanvasElement>(null); // Canvas 引用
   
   // 全局开关：'local' 模式跳过链上合约检查，直接 mock 结果
   // 手动修改此值来切换模式：'local' 或 'production'
@@ -101,6 +119,25 @@ const AIOPage: React.FC = () => {
       convertedStatus: status
     });
     
+    // 处理可选字段（Motoko 的 Opt 类型在 JavaScript 中可能是数组或 null）
+    let airdropWalletAddress: string | null = null;
+    if (record.airdropWalletAddress) {
+      if (Array.isArray(record.airdropWalletAddress) && record.airdropWalletAddress.length > 0) {
+        airdropWalletAddress = record.airdropWalletAddress[0];
+      } else if (typeof record.airdropWalletAddress === 'string') {
+        airdropWalletAddress = record.airdropWalletAddress;
+      }
+    }
+    
+    let airdropNetwork: string | null = null;
+    if (record.airdropNetwork) {
+      if (Array.isArray(record.airdropNetwork) && record.airdropNetwork.length > 0) {
+        airdropNetwork = record.airdropNetwork[0];
+      } else if (typeof record.airdropNetwork === 'string') {
+        airdropNetwork = record.airdropNetwork;
+      }
+    }
+    
     return {
       id: record.id,
       timestamp: record.timestamp,
@@ -109,6 +146,8 @@ const AIOPage: React.FC = () => {
       pmugAirdrop: record.pmugAirdrop,
       status: status,
       walletAddress: record.walletAddress,
+      airdropWalletAddress: airdropWalletAddress,
+      airdropNetwork: airdropNetwork,
     };
   };
 
@@ -295,6 +334,180 @@ const AIOPage: React.FC = () => {
     const intervalId = setInterval(checkPendingClaimSummary, 5000);
     return () => clearInterval(intervalId);
   }, [checkPendingClaimSummary]);
+
+  // 绘制 Canvas 真实马克杯
+  useEffect(() => {
+    if (!coffeeCupDialogOpen) return;
+    
+    // 使用 setTimeout 确保 DOM 已渲染
+    const timer = setTimeout(() => {
+      if (canvasRef.current) {
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          // 设置 canvas 内部尺寸（高分辨率）
+          const scale = 3;
+          const baseWidth = 240;
+          const baseHeight = 280;
+          canvas.width = baseWidth * scale;
+          canvas.height = baseHeight * scale;
+          
+          // 设置 canvas 显示尺寸
+          canvas.style.width = `${baseWidth * 2}px`;
+          canvas.style.height = `${baseHeight * 2}px`;
+          
+          // 缩放上下文以匹配内部尺寸
+          ctx.scale(scale, scale);
+          
+          // 启用平滑渲染（真实线条）
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
+          
+          // 清除画布
+          ctx.clearRect(0, 0, baseWidth, baseHeight);
+          
+          // 绘制杯身主体 - 平滑锥形，上宽下窄，匹配图片形态
+          const cupX = 40;
+          const cupY = 30;
+          const cupTopWidth = 120;  // 顶部宽度
+          const cupBottomWidth = 90;  // 底部宽度（更窄，锥形更明显）
+          const cupHeight = 160;
+          const cupRadius = 15;  // 适中的圆角，更自然
+          
+          // 计算梯形四个角的坐标
+          const topLeftX = cupX;
+          const topRightX = cupX + cupTopWidth;
+          const bottomLeftX = cupX + (cupTopWidth - cupBottomWidth) / 2;
+          const bottomRightX = bottomLeftX + cupBottomWidth;
+          
+          // 杯身路径（平滑锥形，使用贝塞尔曲线让边缘更自然）
+          ctx.beginPath();
+          // 顶部（左上角到右上角）- 平滑曲线
+          ctx.moveTo(topLeftX + cupRadius, cupY);
+          ctx.lineTo(topRightX - cupRadius, cupY);
+          ctx.quadraticCurveTo(topRightX, cupY, topRightX, cupY + cupRadius);
+          // 右侧边（上到下）- 使用贝塞尔曲线创建平滑的锥形
+          ctx.bezierCurveTo(
+            topRightX, cupY + cupHeight * 0.3,
+            bottomRightX + 5, cupY + cupHeight * 0.7,
+            bottomRightX, cupY + cupHeight - cupRadius
+          );
+          ctx.quadraticCurveTo(bottomRightX, cupY + cupHeight, bottomRightX - cupRadius, cupY + cupHeight);
+          // 底部（右下角到左下角）
+          ctx.lineTo(bottomLeftX + cupRadius, cupY + cupHeight);
+          ctx.quadraticCurveTo(bottomLeftX, cupY + cupHeight, bottomLeftX, cupY + cupHeight - cupRadius);
+          // 左侧边（下到上）- 使用贝塞尔曲线创建平滑的锥形
+          ctx.bezierCurveTo(
+            bottomLeftX, cupY + cupHeight * 0.7,
+            topLeftX - 5, cupY + cupHeight * 0.3,
+            topLeftX, cupY + cupRadius
+          );
+          ctx.quadraticCurveTo(topLeftX, cupY, topLeftX + cupRadius, cupY);
+          ctx.closePath();
+          
+          // 填充杯身 - 左侧亮（光源），右侧暗（阴影），匹配图片
+          const gradient = ctx.createLinearGradient(cupX, cupY, cupX + cupTopWidth, cupY);
+          gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');  // 左侧最亮
+          gradient.addColorStop(0.3, 'rgba(250, 250, 250, 0.98)');
+          gradient.addColorStop(0.7, 'rgba(240, 240, 240, 0.95)');
+          gradient.addColorStop(1, 'rgba(235, 235, 235, 0.92)');  // 右侧较暗
+          ctx.fillStyle = gradient;
+          ctx.fill();
+          
+          // 绘制杯身边框 - 黑色边框
+          ctx.strokeStyle = 'rgba(0, 0, 0, 0.95)';
+          ctx.lineWidth = 3;
+          ctx.stroke();
+          
+          // 绘制杯口边缘 - 较厚的顶部边缘，匹配图片
+          ctx.beginPath();
+          ctx.moveTo(topLeftX + cupRadius, cupY);
+          ctx.lineTo(topRightX - cupRadius, cupY);
+          ctx.quadraticCurveTo(topRightX, cupY, topRightX, cupY + cupRadius);
+          ctx.lineTo(topLeftX, cupY + cupRadius);
+          ctx.quadraticCurveTo(topLeftX, cupY, topLeftX + cupRadius, cupY);
+          ctx.strokeStyle = 'rgba(0, 0, 0, 0.95)';
+          ctx.lineWidth = 4;  // 顶部边缘更厚
+          ctx.stroke();
+          
+          // 绘制杯口内部阴影线（形成立体感）
+          ctx.beginPath();
+          ctx.moveTo(topLeftX + cupRadius + 3, cupY + 3);
+          ctx.lineTo(topRightX - cupRadius - 3, cupY + 3);
+          ctx.strokeStyle = 'rgba(200, 200, 200, 0.6)';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+          
+          // 绘制杯底 - 椭圆形，深棕色，匹配图片
+          const baseY = cupY + cupHeight;
+          const baseEllipseWidth = cupBottomWidth + 15;  // 稍微更宽
+          const baseEllipseHeight = 20;  // 适中的高度
+          
+          ctx.beginPath();
+          ctx.ellipse(cupX + cupTopWidth / 2, baseY + baseEllipseHeight / 2, baseEllipseWidth / 2, baseEllipseHeight / 2, 0, 0, 2 * Math.PI);
+          // 添加渐变让底座更立体
+          const baseGradient = ctx.createRadialGradient(
+            cupX + cupTopWidth / 2, baseY + baseEllipseHeight / 2, 0,
+            cupX + cupTopWidth / 2, baseY + baseEllipseHeight / 2, baseEllipseWidth / 2
+          );
+          baseGradient.addColorStop(0, 'rgba(120, 80, 40, 0.95)');
+          baseGradient.addColorStop(1, 'rgba(101, 67, 33, 0.95)');
+          ctx.fillStyle = baseGradient;
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(0, 0, 0, 0.95)';
+          ctx.lineWidth = 5;  // 更粗的边框
+          ctx.stroke();
+          
+          // 绘制把手 - C形，白色，从杯体边缘自然延伸
+          // 把手连接点：从杯体右侧边缘延伸出来
+          const handleTopY = cupY + 50;  // 把手上部连接点
+          const handleBottomY = cupY + 110;  // 把手下部连接点
+          const handleOuterX = cupX + cupTopWidth + 28;  // 把手最外侧位置
+          const handleInnerX = cupX + cupTopWidth - 3;  // 把手内凹位置（接近杯体）
+          
+          ctx.beginPath();
+          // 从杯体右侧开始（上部连接点）
+          ctx.moveTo(topRightX, handleTopY);
+          // 把手外弧（上部）- 平滑向外弯曲
+          ctx.quadraticCurveTo(
+            topRightX + 12, handleTopY - 6,
+            handleOuterX, handleTopY
+          );
+          // 把手右侧（向下）- 平滑曲线
+          ctx.bezierCurveTo(
+            handleOuterX + 2, handleTopY + (handleBottomY - handleTopY) * 0.2,
+            handleOuterX + 2, handleTopY + (handleBottomY - handleTopY) * 0.8,
+            handleOuterX, handleBottomY
+          );
+          // 把手外弧（下部）- 平滑向内弯曲回到杯体
+          ctx.quadraticCurveTo(
+            topRightX + 12, handleBottomY + 6,
+            topRightX, handleBottomY
+          );
+          // 把手内凹（左侧，回到杯体）- 平滑内凹曲线
+          ctx.bezierCurveTo(
+            handleInnerX, handleBottomY - (handleBottomY - handleTopY) * 0.15,
+            handleInnerX, handleTopY + (handleBottomY - handleTopY) * 0.15,
+            topRightX, handleTopY
+          );
+          ctx.closePath();
+          
+          // 把手填充 - 白色，内部有阴影（匹配图片）
+          const handleGradient = ctx.createLinearGradient(topRightX, handleTopY, handleOuterX, handleTopY);
+          handleGradient.addColorStop(0, 'rgba(240, 240, 240, 0.95)');  // 内部（靠近杯体）较暗
+          handleGradient.addColorStop(0.5, 'rgba(250, 250, 250, 0.98)');
+          handleGradient.addColorStop(1, 'rgba(255, 255, 255, 1)');  // 外部较亮
+          ctx.fillStyle = handleGradient;
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(0, 0, 0, 0.95)';
+          ctx.lineWidth = 3;
+          ctx.stroke();
+        }
+      }
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, [coffeeCupDialogOpen]);
 
   // Set global Interaction address - 只在地址变化时更新
   // 注意：useContract hook 会在初始化时自动获取合约，无需手动调用
@@ -744,12 +957,15 @@ const AIOPage: React.FC = () => {
       }, region.delay);
     });
 
-    // 进度完成后，重置状态
+    // 进度完成后，重置状态并打开咖啡杯弹窗
     setTimeout(() => {
       setShowProgress(false);
       setProgress(0);
       setActivatedDevices(0);
       setCurrentRegion(null);
+      // 保存prompt文本并打开咖啡杯弹窗
+      setDisplayPrompt(prompt);
+      setCoffeeCupDialogOpen(true);
       // 重置支付状态，允许再次支付
       setPaymentStatus("idle");
       setTxHash(null);
@@ -1188,6 +1404,70 @@ const AIOPage: React.FC = () => {
     }
   };
 
+  // 处理添加空投钱包地址
+  const handleAddAirdropWallet = (activity: Activity) => {
+    setCurrentActivityForAirdrop(activity);
+    // 如果已有地址，预填充输入框
+    setAirdropWalletAddressInput(activity.airdropWalletAddress || "");
+    setAirdropDialogOpen(true);
+  };
+
+  // 确认添加空投钱包地址
+  const handleConfirmAirdropWallet = async () => {
+    if (!currentActivityForAirdrop || !walletAddress) {
+      toast({
+        title: "Error",
+        description: "Missing required information",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!airdropWalletAddressInput.trim()) {
+      toast({
+        title: "Invalid Address",
+        description: "Please enter a valid airdrop wallet address",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const network = "Solana"; // 当前页面 network = 'Solana'
+      const updatedRecord = await updateAirdropWalletAddress(
+        currentActivityForAirdrop.id,
+        walletAddress,
+        airdropWalletAddressInput.trim(),
+        network
+      );
+
+      if (updatedRecord) {
+        toast({
+          title: "Success",
+          description: "Airdrop wallet address updated successfully",
+        });
+        setAirdropDialogOpen(false);
+        setCurrentActivityForAirdrop(null);
+        setAirdropWalletAddressInput("");
+        // 刷新活动列表
+        await loadActivities();
+      } else {
+        toast({
+          title: "Update Failed",
+          description: "Failed to update airdrop wallet address. Please check if the wallet address matches.",
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
+      console.error("[AIOPage] 更新空投钱包地址异常:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update airdrop wallet address",
+        variant: "destructive",
+      });
+    }
+  };
+
   // 注意：钱包地址过滤现在在后端完成，loadActivities 已经返回了过滤后的数据
   // 直接使用后端返回的数据，不需要再次过滤或分页
   const filteredActivities = useMemo(() => {
@@ -1575,6 +1855,9 @@ const AIOPage: React.FC = () => {
                   <th className="px-6 py-3 font-medium text-right">$AIO Rewards</th>
                   <th className="px-6 py-3 font-medium text-right">$PMUG Airdrop</th>
                   <th className="px-6 py-3 font-medium">Status</th>
+                  <th className="px-6 py-3 font-medium">Airdrop Wallet</th>
+                  <th className="px-6 py-3 font-medium">Network</th>
+                  <th className="px-6 py-3 font-medium">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/10">
@@ -1609,11 +1892,37 @@ const AIOPage: React.FC = () => {
                           {activity.status}
                         </span>
                       </td>
+                      <td className="px-6 py-4 text-slate-300">
+                        {activity.airdropWalletAddress ? (
+                          <span className="font-mono text-xs break-all">
+                            {activity.airdropWalletAddress.slice(0, 8)}...{activity.airdropWalletAddress.slice(-6)}
+                          </span>
+                        ) : (
+                          <span className="text-slate-500 text-xs">-</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-slate-300">
+                        {activity.airdropNetwork ? (
+                          <span className="text-xs">{activity.airdropNetwork}</span>
+                        ) : (
+                          <span className="text-slate-500 text-xs">-</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4">
+                        {walletAddress && (
+                          <button
+                            onClick={() => handleAddAirdropWallet(activity)}
+                            className="px-3 py-1 text-xs rounded-lg bg-gradient-to-r from-indigo-600 to-fuchsia-600 text-white hover:brightness-110 transition-all"
+                          >
+                            {activity.airdropWalletAddress ? "Update" : "Add"} Airdrop Wallet
+                          </button>
+                        )}
+                      </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={5} className="px-6 py-8 text-center text-slate-400">
+                    <td colSpan={8} className="px-6 py-8 text-center text-slate-400">
                       {walletAddress ? "You have no activity records" : "No activity records"}
                     </td>
                   </tr>
@@ -1735,6 +2044,275 @@ const AIOPage: React.FC = () => {
           onOpenChange={setWalletDialogOpen}
           onConnected={handleWalletConnected}
         />
+
+        {/* Coffee Cup Dialog */}
+        <Dialog open={coffeeCupDialogOpen} onOpenChange={setCoffeeCupDialogOpen}>
+          <DialogContent className="bg-slate-900 border-white/10 text-slate-200 max-w-2xl p-0 overflow-hidden">
+            <div className="relative w-full h-full">
+              {/* PixelMug 标题 - 左上角 */}
+              <div className="absolute top-4 left-4 z-50 pointer-events-none">
+              <div 
+                className="font-bold"
+                style={{
+                  fontSize: 'clamp(20px, 3vw, 32px)',
+                  fontWeight: '900',
+                  fontFamily: '"Courier New", monospace',
+                  background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 25%, #1d4ed8 50%, #1e40af 75%, #1e3a8a 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                  letterSpacing: '2px',
+                  lineHeight: '1.2',
+                  animation: 'blink 1.5s ease-in-out infinite',
+                  textShadow: '0 0 20px rgba(59, 130, 246, 0.8)',
+                }}
+              >
+                PixelMug
+              </div>
+            </div>
+            <style>{`
+              @keyframes scrollText {
+                0% {
+                  transform: translateX(calc(-50% + 100% + 50px));
+                }
+                100% {
+                  transform: translateX(calc(-50% - 100% - 50px));
+                }
+              }
+              @keyframes pulse {
+                0%, 100% {
+                  opacity: 0.3;
+                }
+                50% {
+                  opacity: 0.6;
+                }
+              }
+              @keyframes changeColor {
+                0% {
+                  filter: hue-rotate(0deg);
+                }
+                25% {
+                  filter: hue-rotate(90deg);
+                }
+                50% {
+                  filter: hue-rotate(180deg);
+                }
+                75% {
+                  filter: hue-rotate(270deg);
+                }
+                100% {
+                  filter: hue-rotate(360deg);
+                }
+              }
+              @keyframes blink {
+                0%, 50%, 100% {
+                  opacity: 1;
+                  filter: brightness(1) drop-shadow(0 0 10px rgba(59, 130, 246, 0.8));
+                }
+                25% {
+                  opacity: 0.6;
+                  filter: brightness(1.5) drop-shadow(0 0 20px rgba(59, 130, 246, 1));
+                }
+                75% {
+                  opacity: 0.8;
+                  filter: brightness(1.2) drop-shadow(0 0 15px rgba(59, 130, 246, 0.9));
+                }
+              }
+            `}</style>
+            <div className="relative w-full h-[600px] flex items-center justify-center bg-gradient-to-br from-pink-900 via-purple-900 to-fuchsia-900">
+              {/* Canvas 绘制的经典马克杯 */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <canvas
+                  ref={canvasRef}
+                  className="relative"
+                  style={{
+                    imageRendering: 'pixelated',
+                    display: 'block',
+                  }}
+                />
+              </div>
+
+              {/* 网格化显示区域（杯身） - 精确匹配Canvas杯身位置，梯形形状，卡通风格大圆角，严格限制在杯身内 */}
+              <div className="absolute top-[30px] left-1/2 w-[240px] h-[320px] overflow-hidden" style={{ 
+                transform: 'translateX(-50%) scale(2)',
+                transformOrigin: 'center center',
+                clipPath: 'polygon(0% 0%, 100% 0%, 87.5% 100%, 12.5% 100%)',  // 梯形：上宽下窄，匹配新的杯体比例（顶部120，底部90）
+                borderRadius: '20px',  // 匹配Canvas的大圆角，更卡通
+              }}>
+                {/* 透明网格背景 */}
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background: `
+                      repeating-linear-gradient(0deg, transparent, transparent 20px, rgba(255,255,255,0.08) 20px, rgba(255,255,255,0.08) 21px),
+                      repeating-linear-gradient(90deg, transparent, transparent 20px, rgba(255,255,255,0.08) 20px, rgba(255,255,255,0.08) 21px)
+                    `,
+                    backgroundSize: '20px 20px, 20px 20px',
+                  }}
+                />
+                
+                {/* 文本滚动区域 - 像素化多色字体，带边缘弯折消失效果，严格限制在杯身内 */}
+                <div className="absolute inset-0 flex items-center justify-center z-10" style={{
+                  overflow: 'hidden',
+                  clipPath: 'polygon(0% 0%, 100% 0%, 87.5% 100%, 12.5% 100%)',  // 梯形裁剪，严格限制，匹配新的杯体比例
+                  borderRadius: '20px',  // 匹配Canvas的大圆角，更卡通
+                  // 使用更严格的渐变创建边缘立即消失效果，确保文字不超出杯体
+                  maskImage: `
+                    linear-gradient(to right, 
+                      transparent 0%, 
+                      transparent 1%, 
+                      rgba(0,0,0,0.7) 2%, 
+                      black 4%, 
+                      black 96%, 
+                      rgba(0,0,0,0.7) 98%, 
+                      transparent 99%, 
+                      transparent 100%
+                    ),
+                    linear-gradient(to bottom, 
+                      transparent 0%, 
+                      transparent 0.5%, 
+                      rgba(0,0,0,0.7) 1.5%, 
+                      black 2.5%, 
+                      black 97.5%, 
+                      rgba(0,0,0,0.7) 98.5%, 
+                      transparent 99.5%, 
+                      transparent 100%
+                    )
+                  `,
+                  WebkitMaskImage: `
+                    linear-gradient(to right, 
+                      transparent 0%, 
+                      transparent 1%, 
+                      rgba(0,0,0,0.7) 2%, 
+                      black 4%, 
+                      black 96%, 
+                      rgba(0,0,0,0.7) 98%, 
+                      transparent 99%, 
+                      transparent 100%
+                    ),
+                    linear-gradient(to bottom, 
+                      transparent 0%, 
+                      transparent 0.5%, 
+                      rgba(0,0,0,0.7) 1.5%, 
+                      black 2.5%, 
+                      black 97.5%, 
+                      rgba(0,0,0,0.7) 98.5%, 
+                      transparent 99.5%, 
+                      transparent 100%
+                    )
+                  `,
+                  maskComposite: 'intersect',
+                  WebkitMaskComposite: 'source-in',
+                }}>
+                  <div className="relative w-full h-full overflow-hidden" style={{
+                    borderRadius: '20px',  // 匹配卡通风格的大圆角
+                    clipPath: 'polygon(0% 0%, 100% 0%, 87.5% 100%, 12.5% 100%)',  // 双重保险：再次应用梯形裁剪，匹配新的杯体比例
+                  }}>
+                    <div
+                      className="absolute top-[55%] left-1/2 text-center whitespace-nowrap"
+                      style={{
+                        fontSize: 'clamp(32px, 5vw, 64px)',
+                        animation: 'scrollText 8s linear infinite, changeColor 8s linear infinite',
+                        fontWeight: '900',
+                        letterSpacing: '1px',  // 更紧凑的字体间距
+                        fontFamily: '"Courier New", monospace',
+                        lineHeight: '1.1',
+                        WebkitTextStroke: '2.5px rgba(255,255,255,0.9)',
+                        textShadow: `
+                          2px 2px 0px #ff006e,
+                          -2px -2px 0px #3a86ff,
+                          2px -2px 0px #06ffa5,
+                          -2px 2px 0px #ffbe0b,
+                          0 0 20px rgba(255,255,255,0.6)
+                        `,
+                        filter: 'drop-shadow(0 0 12px rgba(255,255,255,0.9))',
+                        background: 'linear-gradient(135deg, #ff006e 0%, #8338ec 25%, #3a86ff 50%, #06ffa5 75%, #ffbe0b 100%)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundClip: 'text',
+                        imageRendering: 'crisp-edges',
+                        textRendering: 'optimizeSpeed',
+                        willChange: 'transform',
+                        maxWidth: '85%',  // 更严格限制最大宽度，确保不超出杯身
+                      }}
+                    >
+                      {displayPrompt || "Your command is being processed..."}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            </div>
+
+            {/* 关闭按钮 */}
+            <DialogFooter className="p-4 border-t border-white/10 bg-slate-900 relative z-50">
+              <Button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setCoffeeCupDialogOpen(false);
+                }}
+                className="w-full bg-gradient-to-r from-indigo-600 to-fuchsia-600 text-white hover:brightness-110 relative z-50"
+                type="button"
+              >
+                Close
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Airdrop Wallet Address Dialog */}
+        <Dialog open={airdropDialogOpen} onOpenChange={setAirdropDialogOpen}>
+          <DialogContent className="bg-slate-900 border-white/10 text-slate-200">
+            <DialogHeader>
+              <DialogTitle className="text-slate-200">
+                {currentActivityForAirdrop?.airdropWalletAddress ? "Update" : "Add"} Airdrop Wallet Address
+              </DialogTitle>
+              <DialogDescription className="text-slate-400">
+                {currentActivityForAirdrop?.airdropWalletAddress 
+                  ? "Update your Solana wallet address to receive airdrops for this record."
+                  : "Enter your Solana wallet address to receive airdrops for this record."}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div>
+                <label className="text-sm font-medium text-slate-300 mb-2 block">
+                  Solana Wallet Address
+                </label>
+                <Input
+                  type="text"
+                  value={airdropWalletAddressInput}
+                  onChange={(e) => setAirdropWalletAddressInput(e.target.value)}
+                  placeholder="Enter Solana wallet address..."
+                  className="bg-white/5 border-white/10 text-slate-200 placeholder-slate-500"
+                />
+                <p className="text-xs text-slate-500 mt-1">
+                  Network: Solana
+                </p>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setAirdropDialogOpen(false);
+                  setAirdropWalletAddressInput("");
+                  setCurrentActivityForAirdrop(null);
+                }}
+                className="bg-white/5 border-white/10 text-slate-300 hover:bg-white/10"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleConfirmAirdropWallet}
+                disabled={!airdropWalletAddressInput.trim()}
+                className="bg-gradient-to-r from-indigo-600 to-fuchsia-600 text-white hover:brightness-110"
+              >
+                Confirm
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

@@ -22,6 +22,8 @@ type Record = {
     aioRewards : Float;
     pmugAirdrop : Float;
     status : Text; // "completed" 或 "claimed"
+    airdropWalletAddress : ?Text; // 空投钱包地址，默认为 null
+    airdropNetwork : ?Text; // 空投网络，默认为 "Solana"
 };
 
 // 存储结构
@@ -118,6 +120,8 @@ func createRecord(
         aioRewards = calculatedAioRewards;
         pmugAirdrop = calculatedPmugAirdrop;
         status = status;
+        airdropWalletAddress = null; // 默认为 null
+        airdropNetwork = ?"Solana"; // 默认为 "Solana"
     };
     
     Debug.print("[ActiveRecord.createRecord] 记录对象创建成功");
@@ -227,6 +231,8 @@ func updateRecord(
                     case (null) { existingRecord.status };
                     case (?s) { s };
                 };
+                airdropWalletAddress = existingRecord.airdropWalletAddress; // 保持原有值，通过 updateAirdropWalletAddress 更新
+                airdropNetwork = existingRecord.airdropNetwork; // 保持原有值，通过 updateAirdropWalletAddress 更新
             };
             
             Debug.print("[ActiveRecord.updateRecord] 更新后的 status: " # updatedRecord.status);
@@ -290,6 +296,8 @@ func getRecordsPaginated(
         aioRewards = 0.0;
         pmugAirdrop = 0.0;
         status = "";
+        airdropWalletAddress = null;
+        airdropNetwork = ?"Solana";
     });
     
     var i = startIndex;
@@ -324,6 +332,8 @@ func getRecordsByWalletPaginated(
         aioRewards = 0.0;
         pmugAirdrop = 0.0;
         status = "";
+        airdropWalletAddress = null;
+        airdropNetwork = ?"Solana";
     });
     
     // 遍历所有记录，找出匹配的钱包地址（不区分大小写）
@@ -373,6 +383,8 @@ func getRecordsByWalletPaginated(
         aioRewards = 0.0;
         pmugAirdrop = 0.0;
         status = "";
+        airdropWalletAddress = null;
+        airdropNetwork = ?"Solana";
     });
     
     // 复制数组
@@ -427,6 +439,8 @@ func getRecordsByWalletPaginated(
         aioRewards = 0.0;
         pmugAirdrop = 0.0;
         status = "";
+        airdropWalletAddress = null;
+        airdropNetwork = ?"Solana";
     });
     
     i := startIndex;
@@ -503,6 +517,78 @@ func getPendingRecordByWallet(storage : RecordStorage, walletAddress : Text) : ?
     return null;
 };
 
+// 更新空投钱包地址
+// 根据记录ID和walletAddress（用于验证）更新指定记录的空投钱包地址
+func updateAirdropWalletAddress(
+    storage : RecordStorage,
+    recordId : Text,
+    walletAddress : Text,
+    airdropWalletAddress : Text,
+    network : ?Text
+) : (Bool, RecordStorage, ?Record) {
+    switch (storage.records.get(recordId)) {
+        case (null) {
+            Debug.print("[ActiveRecord.updateAirdropWalletAddress] 记录不存在，ID: " # recordId);
+            return (false, storage, null);
+        };
+        case (?existingRecord) {
+            // 验证walletAddress是否匹配（不区分大小写）
+            func toLower(text : Text) : Text {
+                var result = "";
+                for (c in Text.toIter(text)) {
+                    let cLower = if (Char.isUppercase(c)) {
+                        Char.fromNat32(Char.toNat32(c) + 32)
+                    } else {
+                        c
+                    };
+                    result := result # Text.fromChar(cLower);
+                };
+                return result;
+            };
+            
+            let existingAddrLower = toLower(existingRecord.walletAddress);
+            let inputAddrLower = toLower(walletAddress);
+            
+            if (existingAddrLower != inputAddrLower) {
+                Debug.print("[ActiveRecord.updateAirdropWalletAddress] walletAddress不匹配，拒绝更新");
+                Debug.print("[ActiveRecord.updateAirdropWalletAddress] 现有记录walletAddress: " # existingRecord.walletAddress);
+                Debug.print("[ActiveRecord.updateAirdropWalletAddress] 传入的walletAddress: " # walletAddress);
+                return (false, storage, null);
+            };
+            
+            // walletAddress匹配，更新空投钱包地址
+            let networkValue = switch (network) {
+                case (null) { "Solana" }; // 默认值为 "Solana"
+                case (?n) { n };
+            };
+            
+            let updatedRecord : Record = {
+                id = existingRecord.id;
+                walletAddress = existingRecord.walletAddress;
+                timestamp = existingRecord.timestamp;
+                prompt = existingRecord.prompt;
+                aioRewards = existingRecord.aioRewards;
+                pmugAirdrop = existingRecord.pmugAirdrop;
+                status = existingRecord.status;
+                airdropWalletAddress = ?airdropWalletAddress;
+                airdropNetwork = ?networkValue;
+            };
+            
+            // 创建新的存储
+            let newRecords = HashMap.clone<Text, Record>(storage.records, Text.equal, Text.hash);
+            newRecords.put(recordId, updatedRecord);
+            
+            let newStorage : RecordStorage = {
+                records = newRecords;
+                nextId = storage.nextId;
+            };
+            
+            Debug.print("[ActiveRecord.updateAirdropWalletAddress] 更新成功，记录ID: " # recordId # ", airdropWalletAddress: " # airdropWalletAddress # ", network: " # networkValue);
+            return (true, newStorage, ?updatedRecord);
+        };
+    };
+};
+
 // ========== 序列化/反序列化 ==========
 
 // 序列化存储到字节数组
@@ -517,7 +603,9 @@ func serialize(storage : RecordStorage) : [Nat8] {
     //   [prompt长度(4字节)] + [prompt字节] +
     //   [aioRewards(8字节)] +
     //   [pmugAirdrop(8字节)] +
-    //   [status长度(4字节)] + [status字节]
+    //   [status长度(4字节)] + [status字节] +
+    //   [airdropWalletAddress标志(1字节)] + [airdropWalletAddress长度(4字节)] + [airdropWalletAddress字节]（如果存在）+
+    //   [airdropNetwork标志(1字节)] + [airdropNetwork长度(4字节)] + [airdropNetwork字节]（如果存在）
     
     var result : [var Nat8] = Array.init<Nat8>(0, 0);
     
@@ -596,6 +684,42 @@ func serialize(storage : RecordStorage) : [Nat8] {
         let statusLenBytes = natToBytes(statusBytes.size(), 4);
         result := Array.thaw(Array.append(Array.freeze(result), statusLenBytes));
         result := Array.thaw(Array.append(Array.freeze(result), statusBytes));
+        
+        // airdropWalletAddress（可选字段）
+        switch (record.airdropWalletAddress) {
+            case (null) {
+                // 写入标志：0表示不存在
+                let flagBytes : [Nat8] = [0];
+                result := Array.thaw(Array.append(Array.freeze(result), flagBytes));
+            };
+            case (?addr) {
+                // 写入标志：1表示存在
+                let flagBytes : [Nat8] = [1];
+                result := Array.thaw(Array.append(Array.freeze(result), flagBytes));
+                let addrBytes = Blob.toArray(Text.encodeUtf8(addr));
+                let addrLenBytes = natToBytes(addrBytes.size(), 4);
+                result := Array.thaw(Array.append(Array.freeze(result), addrLenBytes));
+                result := Array.thaw(Array.append(Array.freeze(result), addrBytes));
+            };
+        };
+        
+        // airdropNetwork（可选字段）
+        switch (record.airdropNetwork) {
+            case (null) {
+                // 写入标志：0表示不存在
+                let flagBytes : [Nat8] = [0];
+                result := Array.thaw(Array.append(Array.freeze(result), flagBytes));
+            };
+            case (?net) {
+                // 写入标志：1表示存在
+                let flagBytes : [Nat8] = [1];
+                result := Array.thaw(Array.append(Array.freeze(result), flagBytes));
+                let netBytes = Blob.toArray(Text.encodeUtf8(net));
+                let netLenBytes = natToBytes(netBytes.size(), 4);
+                result := Array.thaw(Array.append(Array.freeze(result), netLenBytes));
+                result := Array.thaw(Array.append(Array.freeze(result), netBytes));
+            };
+        };
     };
     
     return Array.freeze(result);
@@ -753,6 +877,31 @@ func deserialize(bytes : [Nat8]) : ?RecordStorage {
             case (_) { return null };
         };
         
+        // 读取可选字段 airdropWalletAddress（向后兼容：如果数据不足，使用默认值）
+        var airdropWalletAddress : ?Text = null;
+        if (offset + 1 <= bytes.size()) {
+            let flag = bytes[offset];
+            offset += 1;
+            if (flag == 1) {
+                // 字段存在，读取内容
+                airdropWalletAddress := readText();
+            };
+        };
+        
+        // 读取可选字段 airdropNetwork（向后兼容：如果数据不足，使用默认值）
+        var airdropNetwork : ?Text = ?"Solana"; // 默认值为 "Solana"
+        if (offset + 1 <= bytes.size()) {
+            let flag = bytes[offset];
+            offset += 1;
+            if (flag == 1) {
+                // 字段存在，读取内容
+                airdropNetwork := readText();
+            } else {
+                // 字段不存在，使用默认值
+                airdropNetwork := ?"Solana";
+            };
+        };
+        
         let record : Record = {
             id = id;
             walletAddress = walletAddress;
@@ -761,6 +910,8 @@ func deserialize(bytes : [Nat8]) : ?RecordStorage {
             aioRewards = aioRewards;
             pmugAirdrop = pmugAirdrop;
             status = status;
+            airdropWalletAddress = airdropWalletAddress;
+            airdropNetwork = airdropNetwork;
         };
         
         records.put(id, record);

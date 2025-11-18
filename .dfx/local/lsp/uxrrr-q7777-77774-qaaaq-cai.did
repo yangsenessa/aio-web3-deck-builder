@@ -1,6 +1,8 @@
 type Record = 
  record {
    aioRewards: float64;
+   airdropNetwork: opt text;
+   airdropWalletAddress: opt text;
    id: text;
    pmugAirdrop: float64;
    prompt: text;
@@ -56,6 +58,8 @@ service : {
   setAllowedFrontendCanister: (frontendPrincipal: principal) -> (bool);
   setControllers: (controllers: vec principal) -> (bool);
   setFrontendCanister: (frontendPrincipal: principal) -> (bool);
+  updateAirdropWalletAddress: (recordId: text, walletAddress: text,
+   airdropWalletAddress: text, network: opt text) -> (bool, opt Record);
   updateContract: (interactAddress: opt text, nodeSeed: opt nat,
    rewardPerNode: opt float64, airdropAmount: opt float64, meta: opt text) ->
    (bool);

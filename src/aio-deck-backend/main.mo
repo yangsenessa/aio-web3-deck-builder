@@ -663,6 +663,36 @@ persistent actor {
         return ActiveRecord.getPendingRecordByWallet(storage, walletAddress);
     };
     
+    // 更新空投钱包地址（允许所有用户调用）
+    public shared(msg) func updateAirdropWalletAddress(
+        recordId : Text,
+        walletAddress : Text,
+        airdropWalletAddress : Text,
+        network : ?Text
+    ) : async (Bool, ?ActiveRecord.Record) {
+        Debug.print("[updateAirdropWalletAddress] 开始更新空投钱包地址，调用者: " # Principal.toText(msg.caller));
+        Debug.print("[updateAirdropWalletAddress] 参数 - recordId: " # recordId # ", walletAddress: " # walletAddress # ", airdropWalletAddress: " # airdropWalletAddress);
+        
+        let currentStorage = getRecordStorage();
+        let (success, newStorage, record) = ActiveRecord.updateAirdropWalletAddress(
+            currentStorage,
+            recordId,
+            walletAddress,
+            airdropWalletAddress,
+            network
+        );
+        
+        if (success) {
+            Debug.print("[updateAirdropWalletAddress] 更新成功，记录ID: " # recordId);
+            // 保存到stable memory
+            setRecordStorage(newStorage);
+        } else {
+            Debug.print("[updateAirdropWalletAddress] 更新失败，记录ID: " # recordId # " - 可能原因：记录不存在或walletAddress不匹配");
+        };
+        
+        return (success, record);
+    };
+    
     // 生成设备激活数据（每次调用都随机生成，不存储）
     // 总设备数控制在2663以内，最小点亮133
     public query func getDeviceActivationData() : async [{
