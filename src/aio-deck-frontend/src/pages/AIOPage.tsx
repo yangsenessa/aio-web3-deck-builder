@@ -3,6 +3,7 @@ import { Mic, Zap, Check, Clock, Sparkles, Globe, Wifi, Home, Lightbulb } from "
 import { useToast } from "../hooks/use-toast";
 import { useContract } from "../hooks/useContract";
 import { useRecords } from "../hooks/useRecords";
+import { useElevenLabsStable } from "../hooks/useElevenLabsStable";
 import { interact, getConfig, setInteractionAddress, encodeMeta, claimAIO } from "../smartcontract/aio";
 import type { Address } from "../smartcontract/aio";
 import { BrowserProvider } from "ethers";
@@ -45,7 +46,21 @@ const AIOPage: React.FC = () => {
   const [paymentStatus, setPaymentStatus] = useState<"idle" | "processing" | "success">("idle");
   const [prompt, setPrompt] = useState("");
   const [isRecording, setIsRecording] = useState(false);
+  const [isProcessingVoice, setIsProcessingVoice] = useState(false);
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
+  
+  // ElevenLabs hook for speech to text
+  const agentId = "agent_01jz8rr062f41tsyt56q8fzbrz";
+  const [_elevenLabsState, elevenLabsActions] = useElevenLabsStable(agentId);
+  
+  // Voice recording refs
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const recordingTimeoutRef = useRef<number | null>(null);
+  const recordingCountdownIntervalRef = useRef<number | null>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
+  const recordingStartTimeRef = useRef<number | null>(null);
+  const [recordingTimeRemaining, setRecordingTimeRemaining] = useState<number | null>(null);
   const [feeWei, setFeeWei] = useState<bigint | null>(null);
   const [txHash, setTxHash] = useState<`0x${string}` | null>(null);
   const [walletDialogOpen, setWalletDialogOpen] = useState(false);
@@ -509,6 +524,28 @@ const AIOPage: React.FC = () => {
     return () => clearTimeout(timer);
   }, [coffeeCupDialogOpen]);
 
+  // Cleanup voice recording on unmount
+  useEffect(() => {
+    return () => {
+      if (recordingTimeoutRef.current) {
+        clearTimeout(recordingTimeoutRef.current);
+      }
+      if (recordingCountdownIntervalRef.current) {
+        clearInterval(recordingCountdownIntervalRef.current);
+      }
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+        mediaRecorderRef.current.stop();
+      }
+      // Stop all stream tracks to release microphone
+      if (mediaStreamRef.current) {
+        mediaStreamRef.current.getTracks().forEach(track => track.stop());
+        mediaStreamRef.current = null;
+      }
+      recordingStartTimeRef.current = null;
+      setRecordingTimeRemaining(null);
+    };
+  }, []);
+
   // Set global Interaction address - 只在地址变化时更新
   // 注意：useContract hook 会在初始化时自动获取合约，无需手动调用
   useEffect(() => {
@@ -838,22 +875,252 @@ const AIOPage: React.FC = () => {
     }
   };
 
-  const handleVoiceRecord = async () => {
-    setIsRecording(true);
-    toast({
-      title: "Recording Started",
-      description: "Speak your command...",
-    });
-
-    // Simulate voice recording and transcription
-    setTimeout(() => {
-      setIsRecording(false);
-      setPrompt("Turn on the bedroom light");
-      toast({
-        title: "Voice Recognized",
-        description: "Your command has been transcribed!",
+  // Voice recording functions
+  const startVoiceRecording = useCallback(async () => {
+    try {
+      console.log('🎤 Starting voice recording...');
+      
+      // Request microphone permission
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          sampleRate: 44100
+        } 
       });
-    }, 3000);
+      
+      // Store stream reference for cleanup
+      mediaStreamRef.current = stream;
+      
+      // Create MediaRecorder with fallback for different browsers
+      let mimeType = 'audio/webm;codecs=opus';
+      if (!MediaRecorder.isTypeSupported(mimeType)) {
+        mimeType = 'audio/webm';
+        if (!MediaRecorder.isTypeSupported(mimeType)) {
+          mimeType = 'audio/mp4';
+          if (!MediaRecorder.isTypeSupported(mimeType)) {
+            mimeType = 'audio/wav';
+          }
+        }
+      }
+      
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: mimeType
+      });
+      
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+      
+      // Record start time for duration calculation
+      const startTime = Date.now();
+      recordingStartTimeRef.current = startTime;
+      setRecordingTimeRemaining(3); // 3 seconds limit
+      
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+      
+      mediaRecorder.onstop = async () => {
+        console.log('🛑 Voice recording stopped, processing...');
+        
+        // Calculate recording duration
+        const endTime = Date.now();
+        const recordingDuration = recordingStartTimeRef.current 
+          ? (endTime - recordingStartTimeRef.current) / 1000 
+          : 0;
+        
+        console.log('⏱️ Recording duration:', recordingDuration.toFixed(2), 'seconds');
+        
+        // Check if recording exceeds 3 seconds
+        const MAX_RECORDING_DURATION = 3; // 3 seconds
+        if (recordingDuration > MAX_RECORDING_DURATION) {
+          console.warn('⚠️ Recording exceeds 3 seconds limit, discarding...');
+          setIsProcessingVoice(false);
+          setIsRecording(false);
+          
+          // Stop all tracks to release microphone
+          if (mediaStreamRef.current) {
+            mediaStreamRef.current.getTracks().forEach(track => track.stop());
+            mediaStreamRef.current = null;
+          }
+          
+          // Clear recording data
+          audioChunksRef.current = [];
+          recordingStartTimeRef.current = null;
+          setRecordingTimeRemaining(null);
+          
+          // Clear countdown interval
+          if (recordingCountdownIntervalRef.current) {
+            clearInterval(recordingCountdownIntervalRef.current);
+            recordingCountdownIntervalRef.current = null;
+          }
+          
+          toast({
+            title: "Recording Too Long",
+            description: `Recording was ${recordingDuration.toFixed(1)} seconds. Maximum allowed is 3 seconds. Please record again with a shorter message.`,
+            variant: "destructive",
+          });
+          return;
+        }
+        
+        setIsProcessingVoice(true);
+        
+        try {
+          // Create audio blob with the correct MIME type
+          const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
+          console.log('📁 Audio blob created:', audioBlob.size, 'bytes', 'type:', mimeType, 'duration:', recordingDuration.toFixed(2), 's');
+          
+          // Convert to File for speech to text with appropriate extension
+          const extension = mimeType.includes('webm') ? 'webm' : 
+                          mimeType.includes('mp4') ? 'mp4' : 'wav';
+          const audioFile = new File([audioBlob], `recording.${extension}`, { type: mimeType });
+          
+          // Call speech to text using ElevenLabs
+          const result = await elevenLabsActions.speechToText(audioFile);
+          
+          if (result && result.text) {
+            console.log('✅ Speech to text successful:', result.text);
+            setPrompt(prev => prev + (prev ? ' ' : '') + result.text);
+            toast({
+              title: "Voice Recognized",
+              description: `Your command has been transcribed: "${result.text}"`,
+              variant: "default",
+            });
+          } else {
+            console.log('❌ Speech to text failed or no text returned');
+            toast({
+              title: "Voice Recognition Failed",
+              description: "Could not transcribe your voice. Please try again.",
+              variant: "destructive",
+            });
+          }
+        } catch (error) {
+          console.error('❌ Error processing voice:', error);
+          toast({
+            title: "Voice Processing Error",
+            description: error instanceof Error ? error.message : "An error occurred while processing your voice.",
+            variant: "destructive",
+          });
+        } finally {
+          setIsProcessingVoice(false);
+          setIsRecording(false);
+          recordingStartTimeRef.current = null;
+          setRecordingTimeRemaining(null);
+          
+          // Clear countdown interval
+          if (recordingCountdownIntervalRef.current) {
+            clearInterval(recordingCountdownIntervalRef.current);
+            recordingCountdownIntervalRef.current = null;
+          }
+          
+          // Stop all tracks to release microphone
+          if (mediaStreamRef.current) {
+            mediaStreamRef.current.getTracks().forEach(track => track.stop());
+            mediaStreamRef.current = null;
+          }
+        }
+      };
+      
+      // Start recording
+      mediaRecorder.start();
+      setIsRecording(true);
+      
+      toast({
+        title: "Recording Started",
+        description: "Speak your command (max 3 seconds)...",
+      });
+      
+      // Update countdown timer
+      recordingCountdownIntervalRef.current = window.setInterval(() => {
+        if (recordingStartTimeRef.current) {
+          const elapsed = (Date.now() - recordingStartTimeRef.current) / 1000;
+          const remaining = Math.max(0, 3 - elapsed);
+          setRecordingTimeRemaining(Math.ceil(remaining));
+          
+          if (remaining <= 0) {
+            if (recordingCountdownIntervalRef.current) {
+              clearInterval(recordingCountdownIntervalRef.current);
+              recordingCountdownIntervalRef.current = null;
+            }
+          }
+        }
+      }, 100); // Update every 100ms
+      
+      // Auto-stop after 3 seconds to enforce limit
+      recordingTimeoutRef.current = window.setTimeout(() => {
+        if (mediaRecorder.state === 'recording') {
+          console.log('⏰ 3 second limit reached, stopping automatically');
+          if (recordingCountdownIntervalRef.current) {
+            clearInterval(recordingCountdownIntervalRef.current);
+            recordingCountdownIntervalRef.current = null;
+          }
+          mediaRecorder.stop();
+        }
+      }, 3000); // 3 seconds
+      
+      console.log('✅ Voice recording started (3 second limit)');
+      
+    } catch (error) {
+      console.error('❌ Failed to start voice recording:', error);
+      setIsRecording(false);
+      setIsProcessingVoice(false);
+      recordingStartTimeRef.current = null;
+      setRecordingTimeRemaining(null);
+      
+      // Clear countdown interval if it was started
+      if (recordingCountdownIntervalRef.current) {
+        clearInterval(recordingCountdownIntervalRef.current);
+        recordingCountdownIntervalRef.current = null;
+      }
+      
+      toast({
+        title: "Microphone Access Denied",
+        description: "Please allow microphone access and try again.",
+        variant: "destructive",
+      });
+    }
+  }, [elevenLabsActions, toast]);
+
+  const stopVoiceRecording = useCallback(() => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+      console.log('🛑 Stopping voice recording...');
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+      setRecordingTimeRemaining(null);
+      
+      // Clear timeout when manually stopping
+      if (recordingTimeoutRef.current) {
+        clearTimeout(recordingTimeoutRef.current);
+        recordingTimeoutRef.current = null;
+      }
+      
+      // Clear countdown interval
+      if (recordingCountdownIntervalRef.current) {
+        clearInterval(recordingCountdownIntervalRef.current);
+        recordingCountdownIntervalRef.current = null;
+      }
+      
+      // Note: Don't stop stream tracks here - let onstop handler manage cleanup
+      // This ensures duration check happens before cleanup
+    }
+  }, []);
+
+  // Handle microphone button click (toggle recording)
+  const handleVoiceRecord = () => {
+    if (isProcessingVoice) {
+      // Don't allow new recording while processing
+      return;
+    }
+    
+    if (isRecording) {
+      // Currently recording, stop it
+      stopVoiceRecording();
+    } else {
+      // Not recording, start it
+      startVoiceRecording();
+    }
   };
 
   const handleSubmitPrompt = async () => {
@@ -1651,14 +1918,30 @@ const AIOPage: React.FC = () => {
               />
               <button
                 onClick={handleVoiceRecord}
-                disabled={isRecording}
-                className={`p-3 rounded-xl border transition-all ${
+                disabled={isProcessingVoice}
+                className={`p-3 rounded-xl border transition-all relative ${
                   isRecording
                     ? "bg-red-500/20 border-red-500 animate-pulse"
+                    : isProcessingVoice
+                    ? "bg-yellow-500/20 border-yellow-500"
                     : "bg-white/5 border-white/10 hover:bg-white/10"
                 }`}
+                title={isProcessingVoice ? "Processing voice..." : isRecording ? "Click to stop recording" : "Click to start recording (max 3 seconds)"}
               >
-                <Mic className={`w-5 h-5 ${isRecording ? "text-red-400" : "text-slate-400"}`} />
+                {isProcessingVoice ? (
+                  <Clock className="w-5 h-5 text-yellow-400 animate-spin" />
+                ) : isRecording ? (
+                  <>
+                    <Mic className="w-5 h-5 text-red-400" />
+                    {recordingTimeRemaining !== null && recordingTimeRemaining > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                        {recordingTimeRemaining}
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  <Mic className="w-5 h-5 text-slate-400" />
+                )}
               </button>
               <button
                 onClick={handleSubmitPrompt}
@@ -1668,9 +1951,31 @@ const AIOPage: React.FC = () => {
                 Send
               </button>
             </div>
-            <p className="text-xs text-slate-500 mt-2">
-              Click the mic button to use ElevenLabs voice recognition
-            </p>
+            <div className="mt-2 space-y-1">
+              <p className="text-xs text-slate-500">
+                Click the mic button to use ElevenLabs voice recognition
+              </p>
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1 text-xs text-yellow-400">
+                  <Clock className="w-3 h-3" />
+                  <span className="font-medium">Maximum recording time: 3 seconds</span>
+                </div>
+              </div>
+              {isRecording && recordingTimeRemaining !== null && (
+                <div className="mt-2">
+                  <div className="flex items-center gap-2 text-xs text-red-400 animate-pulse">
+                    <Mic className="w-3 h-3" />
+                    <span>Recording... {recordingTimeRemaining}s remaining</span>
+                  </div>
+                  <div className="mt-1 w-full h-1 bg-white/10 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-gradient-to-r from-red-500 to-orange-500 transition-all duration-100"
+                      style={{ width: `${(recordingTimeRemaining / 3) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         )}
 

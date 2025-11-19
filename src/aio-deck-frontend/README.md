@@ -47,11 +47,30 @@ cd aio-deck-frontend
 # Install dependencies
 npm install
 
+# Configure environment variables
+# Create .env file in the project root directory
+cp .env.example .env  # If .env.example exists
+# Or create .env manually and add:
+# VITE_ELEVENLABS_API_KEY=your_api_key_here
+
 # Start development server
 npm run dev
 ```
 
 Visit http://localhost:5173 to see the application.
+
+### Environment Variables Setup
+
+**Required:**
+- `VITE_ELEVENLABS_API_KEY` - ElevenLabs API key for voice recognition
+  - Get your API key from: https://elevenlabs.io/app/settings/api-keys
+
+**Optional:**
+- `VITE_INTERACTION_ADDRESS` - Ethereum/Base contract address
+- `VITE_BACKEND_CANISTER_ID` - Internet Computer backend canister ID
+- `VITE_FRONTEND_CANISTER_ID` - Internet Computer frontend canister ID
+
+📖 **Detailed setup instructions:** See [ENV_SETUP.md](./ENV_SETUP.md)
 
 ### Development Commands
 
