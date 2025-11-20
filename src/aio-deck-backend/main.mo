@@ -10,6 +10,8 @@ import Float "mo:base/Float";
 import Text "mo:base/Text";
 import Nat "mo:base/Nat";
 import Debug "mo:base/Debug";
+import Time "mo:base/Time";
+import Int "mo:base/Int";
 
 persistent actor {
     // 使用 stable 变量保存合约数据
@@ -694,12 +696,14 @@ persistent actor {
     };
     
     // 生成设备激活数据（每次调用都随机生成，不存储）
-    // 总设备数控制在2663以内，最小点亮133
-    public query func getDeviceActivationData() : async [{
+    // 总设备数控制在2663以内，最小1000
+    public shared query(msg) func getDeviceActivationData() : async [{
         name : Text;
         devices : Nat;
         delay : Nat;
     }] {
+        Debug.print("[getDeviceActivationData] 开始生成设备激活数据，调用者: " # Principal.toText(msg.caller));
+        
         // 定义区域名称
         let regionNames = [
             "North America",
@@ -710,16 +714,37 @@ persistent actor {
             "Middle East"
         ];
         
-        // 总设备数控制在2663以内，最小133
+        // 总设备数控制在2663以内，最小1000
         let maxTotalDevices : Nat = 2663;
-        let minTotalDevices : Nat = 133;
+        let minTotalDevices : Nat = 1000;
+        Debug.print("[getDeviceActivationData] 设备数范围: " # Nat.toText(minTotalDevices) # " - " # Nat.toText(maxTotalDevices));
         
         // 生成随机总设备数（在最小和最大之间）
-        // 使用stable memory大小作为随机种子
-        let timeSeed = Nat64.toNat(ExperimentalStableMemory.size());
-        var randomSeed = timeSeed * 1103515245 + 12345;
+        // 使用当前时间戳（秒数）作为随机种子，确保每次调用都不同
+        let now = Time.now(); // 纳秒级时间戳 (Int类型)
+        // 转换为秒数：取绝对值后除以10亿
+        let nowAbs = if (now < 0) { Int.abs(now) } else { now };
+        let secondsInt = nowAbs / 1_000_000_000; // 秒数 (Int类型)
+        let timeSeed = if (secondsInt < 0) { 0 } else { Nat64.toNat(Nat64.fromIntWrap(secondsInt)) };
+        Debug.print("[getDeviceActivationData] 当前时间戳 (秒): " # Nat.toText(timeSeed));
+        
+        // 结合stable memory大小和调用者Principal增加随机性
+        let stableMemorySeed = Nat64.toNat(ExperimentalStableMemory.size());
+        let callerBlob = Principal.toBlob(msg.caller);
+        let callerBytes = Blob.toArray(callerBlob);
+        var callerSeed : Nat = 0;
+        for (byte in callerBytes.vals()) {
+            callerSeed := callerSeed * 256 + Nat8.toNat(byte);
+        };
+        // 组合多个种子源以增加随机性
+        let combinedSeed = timeSeed * 1000000 + stableMemorySeed * 1000 + (callerSeed % 1000);
+        Debug.print("[getDeviceActivationData] 随机种子 - timeSeed: " # Nat.toText(timeSeed) # ", stableMemorySeed: " # Nat.toText(stableMemorySeed) # ", callerSeed: " # Nat.toText(callerSeed) # ", combinedSeed: " # Nat.toText(combinedSeed));
+        
+        var randomSeed = combinedSeed * 1103515245 + 12345;
         randomSeed := randomSeed * 1103515245 + 12345;
+        randomSeed := randomSeed * 1103515245 + 12345; // 多轮混合以增加随机性
         let randomValue = randomSeed % 2147483648;
+        Debug.print("[getDeviceActivationData] 生成的随机值: " # Nat.toText(randomValue));
         // 使用简单的模运算来生成随机数
         let range = maxTotalDevices - minTotalDevices;
         let randomOffset = randomValue % (range + 1);
@@ -727,11 +752,14 @@ persistent actor {
         
         // 确保总设备数在范围内
         if (finalTotalDevices > maxTotalDevices) {
+            Debug.print("[getDeviceActivationData] 警告: 总设备数超过最大值，调整为 " # Nat.toText(maxTotalDevices));
             finalTotalDevices := maxTotalDevices;
         };
         if (finalTotalDevices < minTotalDevices) {
+            Debug.print("[getDeviceActivationData] 警告: 总设备数低于最小值，调整为 " # Nat.toText(minTotalDevices));
             finalTotalDevices := minTotalDevices;
         };
+        Debug.print("[getDeviceActivationData] 最终总设备数: " # Nat.toText(finalTotalDevices));
         
         // 为每个区域分配设备数量（使用加权随机分配）
         var remainingDevices = finalTotalDevices;
@@ -739,19 +767,23 @@ persistent actor {
         
         // 定义每个区域的权重（用于分配设备）
         let regionWeights = [30, 25, 35, 15, 10, 10]; // 百分比权重
+        Debug.print("[getDeviceActivationData] 开始为 " # Nat.toText(regionNames.size()) # " 个区域分配设备");
         
         for (i in regionNames.keys()) {
             let regionName = regionNames[i];
             let weight = regionWeights[i];
+            Debug.print("[getDeviceActivationData] 处理区域 [" # Nat.toText(i) # "]: " # regionName # ", 权重: " # Nat.toText(weight) # "%, 剩余设备: " # Nat.toText(remainingDevices));
             
             // 计算该区域应该分配的设备数量
             var regionDevices : Nat = 0;
             if (i == regionNames.size() - 1) {
                 // 最后一个区域，分配剩余的所有设备（至少为1）
                 regionDevices := if (remainingDevices > 0) { remainingDevices } else { 1 };
+                Debug.print("[getDeviceActivationData] 最后一个区域，分配剩余所有设备: " # Nat.toText(regionDevices));
             } else {
                 // 根据权重计算设备数量，加上一些随机性
                 let baseDevices = (finalTotalDevices * weight) / 100;
+                Debug.print("[getDeviceActivationData] 区域 " # regionName # " 基础设备数 (按权重): " # Nat.toText(baseDevices));
                 
                 // 生成该区域的随机偏移（±15% 范围）
                 randomSeed := randomSeed * 1103515245 + 12345;
@@ -761,9 +793,11 @@ persistent actor {
                 if (offsetRange == 0) {
                     offsetRange := 1;
                 };
+                Debug.print("[getDeviceActivationData] 区域 " # regionName # " 偏移范围: " # Nat.toText(offsetRange));
                 // 生成随机偏移值（0 到 offsetRange*2）
                 // 使用模运算来生成 -offsetRange 到 +offsetRange 的范围
                 let randomOffset = regionRandom % (offsetRange * 2 + 1);
+                Debug.print("[getDeviceActivationData] 区域 " # regionName # " 随机偏移值: " # Nat.toText(randomOffset));
                 // 将 randomOffset 映射到 -offsetRange 到 +offsetRange 的范围
                 // 如果 randomOffset >= offsetRange，则为正偏移；否则为负偏移
                 if (randomOffset >= offsetRange and randomOffset > offsetRange) {
@@ -776,6 +810,7 @@ persistent actor {
                         current += 1;
                     };
                     regionDevices := baseDevices + positiveOffset;
+                    Debug.print("[getDeviceActivationData] 区域 " # regionName # " 应用正偏移: +" # Nat.toText(positiveOffset) # ", 最终设备数: " # Nat.toText(regionDevices));
                 } else if (randomOffset < offsetRange) {
                     // 负偏移：计算差值（offsetRange - randomOffset）
                     // 由于 randomOffset < offsetRange，差值至少为1
@@ -787,19 +822,24 @@ persistent actor {
                     };
                     if (baseDevices >= negativeOffset) {
                         regionDevices := baseDevices - negativeOffset;
+                        Debug.print("[getDeviceActivationData] 区域 " # regionName # " 应用负偏移: -" # Nat.toText(negativeOffset) # ", 最终设备数: " # Nat.toText(regionDevices));
                     } else {
                         regionDevices := 1;
+                        Debug.print("[getDeviceActivationData] 区域 " # regionName # " 负偏移导致设备数过小，调整为最小值: 1");
                     };
                 } else {
                     // randomOffset == offsetRange，无偏移
                     regionDevices := baseDevices;
+                    Debug.print("[getDeviceActivationData] 区域 " # regionName # " 无偏移，设备数: " # Nat.toText(regionDevices));
                 };
                 
                 // 确保不超过剩余设备数，且至少为1
                 if (regionDevices > remainingDevices) {
+                    Debug.print("[getDeviceActivationData] 区域 " # regionName # " 设备数超过剩余设备数，调整为: " # Nat.toText(remainingDevices));
                     regionDevices := remainingDevices;
                 };
                 if (regionDevices == 0) {
+                    Debug.print("[getDeviceActivationData] 区域 " # regionName # " 设备数为0，调整为最小值: 1");
                     regionDevices := 1;
                 };
             };
@@ -809,6 +849,7 @@ persistent actor {
                 remainingDevices -= regionDevices;
             } else {
                 // 如果剩余设备数不足，将剩余的全部分配
+                Debug.print("[getDeviceActivationData] 区域 " # regionName # " 剩余设备数不足，将剩余 " # Nat.toText(remainingDevices) # " 个设备全部分配");
                 regionDevices := remainingDevices;
                 remainingDevices := 0;
             };
@@ -817,8 +858,20 @@ persistent actor {
                 devices = regionDevices;
                 delay = i * 1000; // 每个区域延迟1秒
             };
+            Debug.print("[getDeviceActivationData] 区域 " # regionName # " 最终分配: " # Nat.toText(regionDevices) # " 个设备, 延迟: " # Nat.toText(i * 1000) # "ms, 剩余设备: " # Nat.toText(remainingDevices));
         };
         
+        // 验证总设备数
+        var totalAssigned : Nat = 0;
+        for (region in regions.vals()) {
+            totalAssigned += region.devices;
+        };
+        Debug.print("[getDeviceActivationData] 设备分配完成，总分配设备数: " # Nat.toText(totalAssigned) # ", 原始总设备数: " # Nat.toText(finalTotalDevices));
+        if (totalAssigned != finalTotalDevices) {
+            Debug.print("[getDeviceActivationData] 警告: 分配的设备总数与原始总数不匹配！");
+        };
+        
+        Debug.print("[getDeviceActivationData] 返回 " # Nat.toText(regions.size()) # " 个区域的数据");
         return Array.freeze(regions);
     };
     

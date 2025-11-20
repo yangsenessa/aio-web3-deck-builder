@@ -100,11 +100,11 @@ func createRecord(
         // 使用简单的哈希算法基于ID和记录数生成伪随机数
         // aioRewards: 50-250 之间（原前端逻辑：Math.floor(Math.random() * 200) + 50）
         let aioSeed = (idNat * 17 + recordsCount * 23) % 500;
-        calculatedAioRewards := Float.fromInt(50 + aioSeed);
+        calculatedAioRewards := Float.fromInt(133 + aioSeed);
         
         // pmugAirdrop: 25-125 之间（原前端逻辑：Math.floor(Math.random() * 100) + 25）
         let pmugSeed = (idNat * 31 + recordsCount * 37) % 300;
-        calculatedPmugAirdrop := Float.fromInt(25 + pmugSeed);
+        calculatedPmugAirdrop := Float.fromInt(75 + pmugSeed);
         
         Debug.print("[ActiveRecord.createRecord] 后端计算 rewards - aioRewards: " # Float.toText(calculatedAioRewards) # ", pmugAirdrop: " # Float.toText(calculatedPmugAirdrop));
     } else {
