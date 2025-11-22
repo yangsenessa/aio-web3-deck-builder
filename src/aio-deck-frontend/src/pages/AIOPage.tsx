@@ -6,7 +6,7 @@ import { useRecords } from "../hooks/useRecords";
 import { useElevenLabsStable } from "../hooks/useElevenLabsStable";
 import { interact, getConfig, setInteractionAddress, encodeMeta, claimAIO } from "../smartcontract/aio";
 import type { Address } from "../smartcontract/aio";
-import { BrowserProvider } from "ethers";
+import { BrowserProvider, JsonRpcProvider } from "ethers";
 import {
   Pagination,
   PaginationContent,
@@ -84,18 +84,95 @@ const AIOPage: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null); // Canvas 引用
   
   // 全局开关：'local' 模式跳过链上合约检查，直接 mock 结果
-  // 手动修改此值来切换模式：'local' 或 'production'
-  const MODE = 'local';
+  // 手动修改此值来切换模式：'local'、'test' 或 'production'
+  // 也可以通过环境变量 VITE_MODE 设置（优先级更高）
+  // 注意：修改环境变量后需要重启开发服务器才能生效
+  // 使用 useMemo 确保环境变量正确读取（与 useElevenLabsStable.ts 中的读取方式一致）
+  const MODE: 'local' | 'test' | 'production' = useMemo(() => {
+    const envMode = import.meta.env.VITE_MODE as 'local' | 'test' | 'production' | undefined;
+    const mode = envMode || 'local';
+    console.log('[AIOPage] 读取环境变量 VITE_MODE:', envMode, '-> 使用模式:', mode);
+    return mode;
+  }, []); // 环境变量在构建时确定，不需要依赖
+  
+  // 开发时输出当前模式，方便调试
+  useEffect(() => {
+    console.log('[AIOPage] 当前运行模式:', MODE);
+    console.log('[AIOPage] 环境变量 VITE_MODE (直接读取):', import.meta.env.VITE_MODE);
+    console.log('[AIOPage] import.meta.env 对象:', import.meta.env);
+  }, [MODE]);
+  
+  // 从环境变量读取测试网配置
+  const TESTNET_CONFIG = useMemo(() => {
+    const envRpc = import.meta.env.VITE_BASE_SEPOLIA_RPC;
+    const defaultRpc = "https://base-sepolia.g.alchemy.com/v2/Br9B6PkCm4u7NhukuwdGihx6SZnhrLWI";
+    const finalRpc = envRpc || defaultRpc;
+    
+    // 调试信息：检查环境变量读取情况
+    console.log('[TESTNET_CONFIG] 环境变量读取:', {
+      'import.meta.env.VITE_BASE_SEPOLIA_RPC': envRpc,
+      '是否为 undefined': envRpc === undefined,
+      '是否为空字符串': envRpc === '',
+      '最终使用的 RPC': finalRpc,
+      '是否包含 YOUR_API_KEY': finalRpc.includes('YOUR_API_KEY'),
+    });
+    
+    return {
+      rpc: finalRpc,
+      interactionAddress: import.meta.env.VITE_TESTNET_INTERACTION_ADDRESS || "0x5e9f531503322b77c6AA492Ef0b3410C4Ee8CF47",
+    };
+  }, []); // 环境变量在构建时确定，不需要依赖
+  
+  // 从环境变量读取生产环境配置
+  const PRODUCTION_CONFIG = useMemo(() => {
+    return {
+      rpc: import.meta.env.VITE_BASE_MAINNET_RPC || import.meta.env.VITE_BASE_RPC || "",
+    };
+  }, []); // 环境变量在构建时确定，不需要依赖
   
   // 使用 useMemo 缓存环境变量，避免每次渲染都重新读取
   const envInteractionAddress = useMemo(() => {
-    return (process.env.NEXT_PUBLIC_INTERACTION_ADDRESS || process.env.VITE_INTERACTION_ADDRESS) as Address | null;
+    return (import.meta.env.VITE_INTERACTION_ADDRESS || import.meta.env.NEXT_PUBLIC_INTERACTION_ADDRESS) as Address | null;
   }, []); // 环境变量在构建时确定，不需要依赖
   
-  // 使用 useMemo 缓存 INTERACTION_ADDRESS，只在 contract 或环境变量变化时更新
+  // 使用 useMemo 缓存 INTERACTION_ADDRESS，根据模式选择不同的地址
   const INTERACTION_ADDRESS = useMemo(() => {
+    if (MODE === 'test') {
+      return TESTNET_CONFIG.interactionAddress as Address;
+    }
     return (contract?.interactAddress || envInteractionAddress) as Address | null;
-  }, [contract?.interactAddress, envInteractionAddress]);
+  }, [contract?.interactAddress, envInteractionAddress, MODE, TESTNET_CONFIG]);
+  
+  // 创建测试网 Provider（用于读取合约数据）
+  const testnetProvider = useMemo(() => {
+    console.log('[BaseContract] 创建 testnetProvider', { MODE, rpc: TESTNET_CONFIG.rpc });
+    if (MODE === 'test') {
+      const provider = new JsonRpcProvider(TESTNET_CONFIG.rpc);
+      console.log('[BaseContract] testnetProvider 创建成功');
+      return provider;
+    }
+    console.log('[BaseContract] testnetProvider 未创建（MODE 不是 test）');
+    return null;
+  }, [MODE, TESTNET_CONFIG]);
+  
+  // 创建生产环境 Provider（用于读取合约数据，优先使用配置的 RPC）
+  const productionProvider = useMemo(() => {
+    console.log('[BaseContract] 创建 productionProvider', { 
+      MODE, 
+      hasRpc: !!PRODUCTION_CONFIG.rpc,
+      rpc: PRODUCTION_CONFIG.rpc 
+    });
+    if (MODE === 'production' && PRODUCTION_CONFIG.rpc) {
+      const provider = new JsonRpcProvider(PRODUCTION_CONFIG.rpc);
+      console.log('[BaseContract] productionProvider 创建成功');
+      return provider;
+    }
+    console.log('[BaseContract] productionProvider 未创建', {
+      isProduction: MODE === 'production',
+      hasRpc: !!PRODUCTION_CONFIG.rpc
+    });
+    return null;
+  }, [MODE, PRODUCTION_CONFIG]);
   
   const [activities, setActivities] = useState<Activity[]>([]);
 
@@ -608,6 +685,7 @@ const AIOPage: React.FC = () => {
 
   // Load fee configuration - 只在 INTERACTION_ADDRESS 或 walletAddress 变化时加载
   // 在 local 模式下，使用 mock fee
+  // 在 test 模式下，使用测试网 RPC 读取合约
   useEffect(() => {
     const loadFee = async () => {
       // In local mode, use mock fee
@@ -621,23 +699,72 @@ const AIOPage: React.FC = () => {
         INTERACTION_ADDRESS !== "0x0000000000000000000000000000000000000000" &&
         INTERACTION_ADDRESS.trim() !== "";
       
-      if (!isValidAddress || typeof window.ethereum === "undefined") {
+      if (!isValidAddress) {
         setFeeWei(null);
         return;
       }
 
       try {
-        const provider = new BrowserProvider(window.ethereum);
+        let provider;
+        console.log('[BaseContract] loadFee: 选择 provider', {
+          MODE,
+          hasTestnetProvider: !!testnetProvider,
+          hasProductionProvider: !!productionProvider,
+          hasWindowEthereum: typeof window.ethereum !== "undefined"
+        });
+        
+        if (MODE === 'test') {
+          if (testnetProvider) {
+            // 在 test 模式下，使用测试网 RPC provider 读取合约
+            console.log('[BaseContract] loadFee: 使用 testnetProvider');
+            provider = testnetProvider;
+          } else {
+            console.warn('[BaseContract] loadFee: test 模式下 testnetProvider 为 null，使用 BrowserProvider 作为回退');
+            if (typeof window.ethereum !== "undefined") {
+              provider = new BrowserProvider(window.ethereum);
+            } else {
+              console.error('[BaseContract] loadFee: test 模式下无法获取 provider');
+              setFeeWei(null);
+              return;
+            }
+          }
+        } else if (MODE === 'production') {
+          if (productionProvider) {
+            // 在 production 模式下，优先使用配置的 RPC provider（避免 401 认证错误）
+            console.log('[BaseContract] loadFee: 使用 productionProvider');
+            provider = productionProvider;
+          } else {
+            console.warn('[BaseContract] loadFee: production 模式下 productionProvider 为 null，使用 BrowserProvider 作为回退');
+            if (typeof window.ethereum !== "undefined") {
+              provider = new BrowserProvider(window.ethereum);
+            } else {
+              console.error('[BaseContract] loadFee: production 模式下无法获取 provider');
+              setFeeWei(null);
+              return;
+            }
+          }
+        } else {
+          // local 模式或其他情况
+          console.log('[BaseContract] loadFee: local 模式或其他，跳过链上调用');
+          setFeeWei(null);
+          return;
+        }
+        
+        console.log('[BaseContract] loadFee: 调用 getConfig', {
+          providerType: provider.constructor?.name || typeof provider,
+          interactionAddress: INTERACTION_ADDRESS
+        });
         const config = await getConfig(provider, INTERACTION_ADDRESS);
         setFeeWei(config.feeWei);
+        console.log('[BaseContract] loadFee: 成功获取配置', { feeWei: config.feeWei.toString() });
       } catch (error) {
-        console.error("Failed to load fee configuration:", error);
+        console.error("[BaseContract] loadFee: 加载费用配置失败", error);
         setFeeWei(null);
       }
     };
 
     loadFee();
-  }, [INTERACTION_ADDRESS, walletAddress, MODE]);
+  }, [INTERACTION_ADDRESS, walletAddress, MODE, testnetProvider, productionProvider]);
 
   // Handle wallet connection - open dialog instead of directly connecting
   const handleConnectWallet = () => {
@@ -776,7 +903,7 @@ const AIOPage: React.FC = () => {
       return;
     }
 
-    // Production mode: check contract address configuration
+    // Production/Test mode: check contract address configuration
     if (!INTERACTION_ADDRESS) {
       toast({
         title: "Configuration Error",
@@ -791,16 +918,36 @@ const AIOPage: React.FC = () => {
 
     toast({
       title: "Processing Payment",
-      description: "Please confirm the transaction in your wallet...",
+      description: MODE === 'test' 
+        ? "Please confirm the transaction in your wallet (Testnet)..."
+        : "Please confirm the transaction in your wallet...",
     });
 
     try {
       // Create ethers provider and signer
+      // 注意：即使是在 test 模式下，也需要使用 BrowserProvider 来获取 signer（因为需要 MetaMask 签名）
+      // 但读取合约配置时可以使用测试网 RPC
       const provider = new BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
 
       // Get latest fee configuration
-      const config = await getConfig(provider, INTERACTION_ADDRESS);
+      // 优先使用配置的 RPC provider（避免 401 认证错误）
+      let config;
+      console.log('[BaseContract] interact: 选择 provider 获取配置', {
+        MODE,
+        hasTestnetProvider: !!testnetProvider,
+        hasProductionProvider: !!productionProvider
+      });
+      if (MODE === 'test' && testnetProvider) {
+        console.log('[BaseContract] interact: 使用 testnetProvider 获取配置');
+        config = await getConfig(testnetProvider, INTERACTION_ADDRESS);
+      } else if (MODE === 'production' && productionProvider) {
+        console.log('[BaseContract] interact: 使用 productionProvider 获取配置');
+        config = await getConfig(productionProvider, INTERACTION_ADDRESS);
+      } else {
+        console.log('[BaseContract] interact: 使用 BrowserProvider 获取配置');
+        config = await getConfig(provider, INTERACTION_ADDRESS);
+      }
       const requiredFee = config.feeWei;
 
       // Execute interaction contract call
@@ -1386,6 +1533,10 @@ const AIOPage: React.FC = () => {
     setIsClaiming(true);
     setClaimTxHash(null);
 
+    // 调试：输出当前模式
+    console.log('[AIOPage] handleClaim: 当前模式 =', MODE);
+    console.log('[AIOPage] handleClaim: INTERACTION_ADDRESS =', INTERACTION_ADDRESS);
+
     // In local mode, skip contract check and mock the result
     if (MODE === 'local') {
       toast({
@@ -1484,7 +1635,7 @@ const AIOPage: React.FC = () => {
       return;
     }
 
-    // Production mode: check contract address configuration
+    // Production/Test mode: check contract address configuration
     if (!INTERACTION_ADDRESS) {
       toast({
         title: "Configuration Error",
@@ -1497,7 +1648,9 @@ const AIOPage: React.FC = () => {
 
     toast({
       title: "Processing Claim",
-      description: "Please confirm the transaction in your wallet...",
+      description: MODE === 'test'
+        ? "Please confirm the transaction in your wallet (Testnet)..."
+        : "Please confirm the transaction in your wallet...",
     });
 
     try {
@@ -1539,8 +1692,7 @@ const AIOPage: React.FC = () => {
       const signer = await provider.getSigner();
 
       // 批量 claim 所有记录
-      // 注意：claimAIO 需要 action 和 timestamp，我们使用固定的 action 和从记录时间戳转换的 timestamp
-      const action = "participate_voice_ai";
+      // 注意：claimAIO 现在只需要 amount 参数（以 wei 为单位）
       let successCount = 0;
       let lastTxHash: `0x${string}` | null = null;
 
@@ -1558,26 +1710,20 @@ const AIOPage: React.FC = () => {
             continue; // 跳过不匹配的记录
           }
           
-          // 将时间戳字符串转换为 block timestamp (秒)
-          // 记录的时间戳格式: "2025/11/16 23:34:01"
-          // 转换为标准格式: "2025-11-16 23:34:01" 然后解析
-          const timestampStr = record.timestamp.replace(/(\d{4})\/(\d{2})\/(\d{2})/, '$1-$2-$3');
-          const date = new Date(timestampStr);
+          // 将 aioRewards 转换为 wei（AIO Token 使用 8 位小数）
+          // aioRewards 是数字（例如 100），需要转换为 wei（100 * 10^8）
+          const amountWei = BigInt(record.aioRewards) * BigInt(10 ** 8);
           
-          // 如果日期无效，使用当前时间作为后备
-          let timestampSeconds: number;
-          if (isNaN(date.getTime())) {
-            console.warn(`[AIOPage] 无法解析时间戳 ${record.timestamp}，使用当前时间`);
-            timestampSeconds = Math.floor(Date.now() / 1000);
-          } else {
-            timestampSeconds = Math.floor(date.getTime() / 1000);
-          }
+          console.log(`[AIOPage] 准备 claim 记录 ${record.id}`, {
+            recordId: record.id,
+            aioRewards: record.aioRewards,
+            amountWei: amountWei.toString()
+          });
           
           // 调用 claimAIO
           const hash = await claimAIO(
             signer,
-            action,
-            BigInt(timestampSeconds),
+            amountWei,
             {
               interactionAddress: INTERACTION_ADDRESS,
               account: account as Address,
@@ -1889,7 +2035,9 @@ const AIOPage: React.FC = () => {
                     <p className="text-xs text-slate-400 mb-1">Transaction Hash:</p>
                     <p className="text-sm text-slate-300 font-mono break-all">{txHash}</p>
                     <a
-                      href={`https://sepolia.basescan.org/tx/${txHash}`}
+                      href={MODE === 'test' 
+                        ? `https://sepolia.basescan.org/tx/${txHash}`
+                        : `https://sepolia.basescan.org/tx/${txHash}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-xs text-indigo-400 hover:text-indigo-300 mt-2 inline-block"
@@ -2095,9 +2243,11 @@ const AIOPage: React.FC = () => {
               <div className="flex-1">
                 <p className="text-green-300 font-medium">Claim Successful!</p>
                 <p className="text-xs text-green-400 mt-1">Transaction Hash: {claimTxHash}</p>
-                {MODE !== 'local' && (
+                {(MODE === 'test' || MODE === 'production') && (
                   <a
-                    href={`https://sepolia.basescan.org/tx/${claimTxHash}`}
+                    href={MODE === 'test'
+                      ? `https://sepolia.basescan.org/tx/${claimTxHash}`
+                      : `https://sepolia.basescan.org/tx/${claimTxHash}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-xs text-indigo-400 hover:text-indigo-300 mt-2 inline-block"

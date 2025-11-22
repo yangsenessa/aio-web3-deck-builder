@@ -1,12 +1,50 @@
 // Base链ERC20代币交互脚本
 import { ethers } from 'ethers';
 
-// Token合约地址（待部署后更新）
-export const AIO_TOKEN_ADDRESS = '0x0000000000000000000000000000000000000000';
+// 运行模式：'local' | 'test' | 'production'
+// 从环境变量读取，如果没有设置，默认为 'local'
+const MODE: 'local' | 'test' | 'production' = (import.meta.env.VITE_MODE as 'local' | 'test' | 'production' | undefined) || 'local';
 
-// Base链RPC配置 - Base Sepolia 测试网
-const ALCHEMY_API_KEY = 'Br9B6PkCm4u7NhukuwdGihx6SZnhrLWI';
-const BASE_SEPOLIA_RPC = `https://base-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}`;
+// 测试网配置
+const TESTNET_CONFIG = {
+  rpc: import.meta.env.VITE_BASE_SEPOLIA_RPC || "https://base-sepolia.g.alchemy.com/v2/Br9B6PkCm4u7NhukuwdGihx6SZnhrLWI",
+  aioTokenAddress: import.meta.env.VITE_TESTNET_AIO_TOKEN_ADDRESS || "0x7a1d1F7Cb42997E3cCc32E69BD26BEbe33ef8F57",
+};
+
+// 生产环境配置
+const PRODUCTION_CONFIG = {
+  rpc: import.meta.env.VITE_BASE_MAINNET_RPC || import.meta.env.VITE_BASE_RPC || "",
+  aioTokenAddress: import.meta.env.VITE_AIO_TOKEN_ADDRESS || "0x0000000000000000000000000000000000000000",
+};
+
+// 根据模式获取 AIO Token 地址
+function getAioTokenAddress(): string {
+  if (MODE === 'test') {
+    return TESTNET_CONFIG.aioTokenAddress;
+  } else if (MODE === 'production') {
+    return PRODUCTION_CONFIG.aioTokenAddress;
+  }
+  // local 模式：返回零地址（使用 mock 数据）
+  return '0x0000000000000000000000000000000000000000';
+}
+
+// 导出 AIO Token 地址（根据模式动态获取）
+export const AIO_TOKEN_ADDRESS = getAioTokenAddress();
+
+// 根据模式获取 RPC 端点
+function getRpcEndpoint(): string {
+  if (MODE === 'test') {
+    return TESTNET_CONFIG.rpc;
+  } else if (MODE === 'production') {
+    if (PRODUCTION_CONFIG.rpc) {
+      return PRODUCTION_CONFIG.rpc;
+    }
+    // 如果没有配置生产环境 RPC，使用默认的 Base 主网 RPC
+    return "https://mainnet.base.org";
+  }
+  // local 模式：使用测试网 RPC（用于开发）
+  return TESTNET_CONFIG.rpc;
+}
 
 // ERC20 标准 ABI（仅包含需要的函数）
 const ERC20_ABI = [
@@ -30,9 +68,11 @@ const CACHE_DURATION = 5 * 60 * 1000;
 
 /**
  * 获取Base链Provider
+ * 根据 MODE 选择对应的 RPC 端点
  */
 function getProvider(): ethers.JsonRpcProvider {
-  return new ethers.JsonRpcProvider(BASE_SEPOLIA_RPC);
+  const rpc = getRpcEndpoint();
+  return new ethers.JsonRpcProvider(rpc);
 }
 
 /**
@@ -44,10 +84,12 @@ function isValidAddress(address: string): boolean {
 
 /**
  * 获取代币持有者数量
- * @param tokenAddress 代币合约地址
+ * @param tokenAddress 代币合约地址，如果不提供则使用配置的地址
  * @returns 持有者数量
  */
-export async function getTokenHolderCount(tokenAddress: string = AIO_TOKEN_ADDRESS): Promise<number> {
+export async function getTokenHolderCount(tokenAddress?: string): Promise<number> {
+  // 如果没有提供地址，使用配置的地址
+  const address = tokenAddress || AIO_TOKEN_ADDRESS;
   // 检查缓存
   const now = Date.now();
   if (cache.holderCount.data !== null && (now - cache.holderCount.timestamp) < CACHE_DURATION) {
@@ -55,7 +97,7 @@ export async function getTokenHolderCount(tokenAddress: string = AIO_TOKEN_ADDRE
   }
 
   // 如果合约地址无效，返回mock数据
-  if (!isValidAddress(tokenAddress)) {
+  if (!isValidAddress(address)) {
     const mockHolderCount = 15234 + Math.floor(Math.random() * 1000);
     cache.holderCount = { data: mockHolderCount, timestamp: now };
     return mockHolderCount;
@@ -63,7 +105,7 @@ export async function getTokenHolderCount(tokenAddress: string = AIO_TOKEN_ADDRE
 
   try {
     const provider = getProvider();
-    const tokenContract = new ethers.Contract(tokenAddress, ERC20_ABI, provider);
+    const tokenContract = new ethers.Contract(address, ERC20_ABI, provider);
     
     // 查询Transfer事件来统计持有者
     // 注意：这是一个简化的实现，实际项目中可能需要使用The Graph等索引服务
@@ -120,10 +162,13 @@ export async function getTokenHolderCount(tokenAddress: string = AIO_TOKEN_ADDRE
 
 /**
  * 获取代币总供应量
- * @param tokenAddress 代币合约地址
+ * @param tokenAddress 代币合约地址，如果不提供则使用配置的地址
  * @returns 总供应量
  */
-async function getTokenTotalSupply(tokenAddress: string): Promise<number> {
+async function getTokenTotalSupply(tokenAddress?: string): Promise<number> {
+  // 如果没有提供地址，使用配置的地址
+  const address = tokenAddress || AIO_TOKEN_ADDRESS;
+  
   // 检查缓存
   const now = Date.now();
   if (cache.totalSupply.data !== null && (now - cache.totalSupply.timestamp) < CACHE_DURATION) {
@@ -131,7 +176,7 @@ async function getTokenTotalSupply(tokenAddress: string): Promise<number> {
   }
 
   // 如果合约地址无效，返回mock数据
-  if (!isValidAddress(tokenAddress)) {
+  if (!isValidAddress(address)) {
     const mockTotalSupply = 1000000000;
     cache.totalSupply = { data: mockTotalSupply, timestamp: now };
     return mockTotalSupply;
@@ -139,7 +184,7 @@ async function getTokenTotalSupply(tokenAddress: string): Promise<number> {
 
   try {
     const provider = getProvider();
-    const tokenContract = new ethers.Contract(tokenAddress, ERC20_ABI, provider);
+    const tokenContract = new ethers.Contract(address, ERC20_ABI, provider);
     
     // 获取总供应量和小数位数
     const [totalSupply, decimals] = await Promise.all([
@@ -167,7 +212,7 @@ async function getTokenTotalSupply(tokenAddress: string): Promise<number> {
  * @param _tokenAddress 代币合约地址（当前未使用，待接入价格API后启用）
  * @returns 代币价格（USD）
  */
-async function getTokenPrice(_tokenAddress: string = AIO_TOKEN_ADDRESS): Promise<number> {
+async function getTokenPrice(_tokenAddress?: string): Promise<number> {
   try {
     // TODO: 实现真实的价格查询
     // 可以从DEX（如Uniswap V3 on Base）或价格聚合器（如CoinGecko）获取
@@ -213,11 +258,11 @@ export function formatTokenAmount(amount: number, decimals: number = 18): string
 /**
  * 获取代币完整信息（包括持有者数量、总供应量、价格等）
  * 使用缓存和优化的请求序列来减少RPC负载
- * @param tokenAddress 代币合约地址，默认为配置的地址
+ * @param tokenAddress 代币合约地址，如果不提供则使用配置的地址
  * @returns 代币信息
  */
 export async function getTokenInfo(
-  tokenAddress: string = AIO_TOKEN_ADDRESS
+  tokenAddress?: string
 ): Promise<{
   totalSupply: number;
   holders: number;
@@ -225,6 +270,8 @@ export async function getTokenInfo(
   price: number;
   marketCap: number;
 }> {
+  // 如果没有提供地址，使用配置的地址
+  const address = tokenAddress || AIO_TOKEN_ADDRESS;
   // 检查缓存
   const now = Date.now();
   if (cache.tokenInfo.data !== null && (now - cache.tokenInfo.timestamp) < CACHE_DURATION) {
@@ -238,22 +285,22 @@ export async function getTokenInfo(
   try {
     // 并行获取总供应量和价格（轻量级请求）
     const [totalSupply, price] = await Promise.all([
-      getTokenTotalSupply(tokenAddress),
-      getTokenPrice(tokenAddress),
+      getTokenTotalSupply(address),
+      getTokenPrice(address),
     ]);
     
     // 添加延迟后再获取持有者数量（重量级请求）
     await new Promise(resolve => setTimeout(resolve, 300));
     
     // 获取持有者数量
-    const holders = await getTokenHolderCount(tokenAddress);
+    const holders = await getTokenHolderCount(address);
 
     const marketCap = totalSupply * price;
 
     const result = {
       totalSupply,
       holders,
-      address: tokenAddress,
+      address: address,
       price,
       marketCap,
     };
@@ -267,7 +314,7 @@ export async function getTokenInfo(
     return {
       totalSupply: 1000000000,
       holders: 15234,
-      address: tokenAddress,
+      address: address,
       price: 0.05,
       marketCap: 50000000, // 50M
     };
@@ -279,7 +326,7 @@ export async function getTokenInfo(
  * @param _tokenAddress 代币合约地址（当前未使用，待合约部署后启用）
  * @returns 24小时交易量（USD）
  */
-export async function get24hVolume(_tokenAddress: string = AIO_TOKEN_ADDRESS): Promise<number> {
+export async function get24hVolume(_tokenAddress?: string): Promise<number> {
   try {
     // TODO: 实现真实的交易量查询
     // 可以从DEX或链上数据聚合器获取
@@ -299,7 +346,7 @@ export async function get24hVolume(_tokenAddress: string = AIO_TOKEN_ADDRESS): P
  * @returns 价格变化百分比
  */
 export async function getPriceChange(
-  _tokenAddress: string = AIO_TOKEN_ADDRESS,
+  _tokenAddress?: string,
   timeframe: '1h' | '24h' | '7d' | '30d' = '24h'
 ): Promise<number> {
   try {

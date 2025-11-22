@@ -140,10 +140,10 @@ export function ClaimButton({
     }
   };
 
-  // 格式化奖励数量
+  // 格式化奖励数量（AIO Token 使用 8 位小数）
   const formatReward = (amount: bigint | null): string => {
     if (!amount) return '加载中...';
-    const tokens = Number(amount) / 1e18;
+    const tokens = Number(amount) / 1e8; // AIO Token 使用 8 位小数
     if (tokens < 0.001) {
       return `${Number(amount)} wei`;
     }

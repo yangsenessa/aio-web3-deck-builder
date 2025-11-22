@@ -114,54 +114,6 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* $AIO Dashboard CTA Card */}
-      <div className="max-w-7xl mx-auto mb-8">
-        <Link
-          to="/aio-dashboard"
-          className="group block relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-indigo-600/20 via-purple-600/20 to-fuchsia-600/20 p-8 sm:p-10 hover:border-white/20 hover:from-indigo-600/30 hover:via-purple-600/30 hover:to-fuchsia-600/30 transition-all duration-300"
-        >
-          <div className="relative z-10">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-r from-indigo-500 to-fuchsia-500 flex items-center justify-center flex-shrink-0">
-                    <Zap className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
-                  </div>
-                  <div>
-                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-100 mb-1">
-                      $AIO Token Dashboard
-                    </h2>
-                    <p className="text-sm sm:text-base text-slate-300">
-                      View real-time token metrics, price charts, and trading information
-                    </p>
-                  </div>
-                </div>
-                <div className="flex flex-wrap items-center gap-4 mt-4">
-                  <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10">
-                    <img 
-                      src="/base.png" 
-                      alt="Base Logo" 
-                      className="w-5 h-5 object-contain"
-                    />
-                    <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
-                    <span className="text-sm text-slate-300">Base</span>
-                  </div>
-                </div>
-              </div>
-              <div className="flex-shrink-0">
-                <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-indigo-600 to-fuchsia-600 text-white font-medium group-hover:brightness-110 transition-all">
-                  View Dashboard
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </div>
-              </div>
-            </div>
-          </div>
-          {/* Decorative gradient orbs */}
-          <div className="absolute top-0 right-0 w-40 h-40 bg-indigo-500/20 rounded-full blur-3xl group-hover:bg-indigo-500/30 transition-all"></div>
-          <div className="absolute bottom-0 left-0 w-40 h-40 bg-fuchsia-500/20 rounded-full blur-3xl group-hover:bg-fuchsia-500/30 transition-all"></div>
-        </Link>
-      </div>
-
       {/* Announcement Banner */}
       <div className="max-w-7xl mx-auto mb-8">
         <div className="relative mb-8 mt-8 overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-r from-indigo-600/20 via-purple-600/20 to-fuchsia-600/20 p-6 sm:p-8 backdrop-blur-sm hover:border-white/20 transition-all duration-300">

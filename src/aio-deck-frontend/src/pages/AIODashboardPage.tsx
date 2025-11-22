@@ -15,7 +15,7 @@ import {
   Globe,
   Zap
 } from "lucide-react";
-import { getTokenInfo, get24hVolume, getPriceChange, formatTokenAmount, formatHolderCount, AIO_TOKEN_ADDRESS } from "../lib/baseTokens";
+import { getTokenInfo, get24hVolume, getPriceChange, formatTokenAmount, formatHolderCount } from "../lib/baseTokens";
 import { useToast } from "../hooks/use-toast";
 
 const AIODashboardPage: React.FC = () => {
@@ -42,7 +42,7 @@ const AIODashboardPage: React.FC = () => {
         const [info, volume, priceChange] = await Promise.all([
           getTokenInfo(),
           get24hVolume(),
-          getPriceChange(AIO_TOKEN_ADDRESS, timeframe),
+          getPriceChange(undefined, timeframe), // 使用默认地址（根据 MODE 自动选择）
         ]);
         setTokenData(info);
         setVolume24h(volume);

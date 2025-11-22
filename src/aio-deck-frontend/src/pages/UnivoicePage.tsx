@@ -355,7 +355,7 @@ const UnivoicePage: React.FC = () => {
               </div>
 
               {/* Total */}
-              <div className="p-4 rounded-xl bg-white/5 border border-white/10 mb-6">
+              <div className="hidden p-4 rounded-xl bg-white/5 border border-white/10 mb-6">
                 <div className="flex items-center justify-between">
                   <span className="text-slate-400">Total</span>
                   <span className="text-xl font-bold text-slate-200">

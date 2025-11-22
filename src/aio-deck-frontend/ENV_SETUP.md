@@ -30,18 +30,66 @@ VITE_ELEVENLABS_API_KEY=your_elevenlabs_api_key_here
 
 ## 🔧 可选的环境变量
 
-### 2. Interaction Contract Address
+### 2. 运行模式 (Mode)
 
-用于 Ethereum/Base 网络的智能合约交互。
+控制应用运行模式：`local`（本地模拟）、`test`（测试网）或 `production`（生产环境）。
 
 ```bash
-# Ethereum/Base Network Configuration
+# Application Mode
+VITE_MODE=local  # 可选值: local, test, production
+```
+
+如果不设置，默认为 `local` 模式。
+
+### 3. Interaction Contract Address
+
+用于 Ethereum/Base 网络的智能合约交互（生产环境）。
+
+```bash
+# Ethereum/Base Network Configuration (Production)
 VITE_INTERACTION_ADDRESS=0x...
 ```
 
 如果不设置，系统会尝试从后端获取合约地址。
 
-### 3. Internet Computer Canister IDs
+### 4. 测试网配置 (Testnet Configuration)
+
+当 `VITE_MODE=test` 时，需要配置以下测试网相关环境变量：
+
+```bash
+# Base Sepolia Testnet RPC
+VITE_BASE_SEPOLIA_RPC=https://base-sepolia.g.alchemy.com/v2/YOUR_API_KEY
+
+# Testnet Contract Addresses
+VITE_TESTNET_INTERACTION_ADDRESS=0x5e9f531503322b77c6AA492Ef0b3410C4Ee8CF47
+VITE_TESTNET_AIO_TOKEN_ADDRESS=0x7a1d1F7Cb42997E3cCc32E69BD26BEbe33ef8F57
+```
+
+**注意：** 
+- 如果不设置这些变量，代码会使用默认的测试网配置（硬编码的测试网地址）
+- `VITE_TESTNET_AIO_TOKEN_ADDRESS` 用于代币信息查询（持有者数量、总供应量等）
+- 其他合约地址（如 feeDistributor 等）会从 interaction 合约中动态读取，无需单独配置
+
+### 5. 生产环境配置 (Production Configuration)
+
+当 `VITE_MODE=production` 时，需要配置以下生产环境相关环境变量：
+
+```bash
+# Base Mainnet RPC (可选，如果不设置会使用默认的 Base 主网 RPC)
+VITE_BASE_MAINNET_RPC=https://mainnet.base.org
+# 或者
+VITE_BASE_RPC=https://mainnet.base.org
+
+# Production Contract Addresses
+VITE_INTERACTION_ADDRESS=0x...  # 生产环境的 Interaction 合约地址
+VITE_AIO_TOKEN_ADDRESS=0x...     # 生产环境的 AIO Token 合约地址
+```
+
+**注意：**
+- 如果不设置 `VITE_BASE_MAINNET_RPC` 或 `VITE_BASE_RPC`，会使用默认的 Base 主网 RPC: `https://mainnet.base.org`
+- 如果不设置 `VITE_AIO_TOKEN_ADDRESS`，会使用零地址（返回 mock 数据）
+
+### 6. Internet Computer Canister IDs
 
 这些通常会自动从 `.dfx/local/canister_ids.json` 加载，但也可以手动设置：
 
@@ -66,8 +114,15 @@ VITE_FRONTEND_CANISTER_ID=...
    # ElevenLabs Configuration
    VITE_ELEVENLABS_API_KEY=your_elevenlabs_api_key_here
    
-   # Ethereum/Base Network Configuration
+   # Application Mode (可选: local, test, production)
+   VITE_MODE=local
+   
+   # Ethereum/Base Network Configuration (Production)
    VITE_INTERACTION_ADDRESS=
+   
+   # Base Sepolia Testnet Configuration (当 VITE_MODE=test 时使用)
+   VITE_BASE_SEPOLIA_RPC=https://base-sepolia.g.alchemy.com/v2/YOUR_API_KEY
+   VITE_TESTNET_INTERACTION_ADDRESS=0x5e9f531503322b77c6AA492Ef0b3410C4Ee8CF47
    ```
 
 3. 替换 `your_elevenlabs_api_key_here` 为你的实际 API Key
